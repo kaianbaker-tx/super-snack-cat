@@ -1,0 +1,101 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/options.gd" id="1_opt"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.11, 0.12, 0.18, 0.97)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.85, 0.35, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 56.0
+content_margin_top = 40.0
+content_margin_right = 56.0
+content_margin_bottom = 40.0
+
+[node name="Options" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_opt")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -190.0
+offset_right = 260.0
+offset_bottom = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Box" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 44
+text = "OPTIONS"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Panel/Box"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
+[node name="MusicLabel" type="Label" parent="Panel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "MUSIC"
+
+[node name="MusicSlider" type="HSlider" parent="Panel/Box"]
+custom_minimum_size = Vector2(400, 38)
+layout_mode = 2
+max_value = 1.0
+step = 0.02
+value = 0.45
+
+[node name="Gap2" type="Control" parent="Panel/Box"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="SoundLabel" type="Label" parent="Panel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "SOUND EFFECTS"
+
+[node name="SoundSlider" type="HSlider" parent="Panel/Box"]
+custom_minimum_size = Vector2(400, 38)
+layout_mode = 2
+max_value = 1.0
+step = 0.02
+value = 0.9
+
+[node name="Gap3" type="Control" parent="Panel/Box"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Panel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "P closes this   ·   arrow keys move the sliders"
+horizontal_alignment = 1

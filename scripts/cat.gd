@@ -100,6 +100,10 @@ var water_squares := 0
 var ladder_squares := 0
 var climbing := false
 
+# After springing off a ladder, ignore ladders for a moment so that
+# holding UP doesn't grab it again mid-jump.
+var ignore_ladders_until := -99.0
+
 # While the clock is below this, a diamond is protecting you.
 var diamond_until := -99.0
 var facing := 1                  # 1 = looking right, -1 = looking left
@@ -134,6 +138,11 @@ var fire_pictures = [
 ]
 
 var fireball_scene = preload("res://scenes/fireball.tscn")
+var puff_scene = preload("res://scenes/puff.tscn")
+
+# Used to spot the exact moment you touch down, and how hard.
+var was_on_floor := false
+var skid_timer := 0.0
 
 
 func _ready():
@@ -170,7 +179,12 @@ func _physics_process(delta):
 	jump()
 	run(delta)
 
+	# move_and_slide zeroes your falling speed the instant you touch
+	# down, so remember it first - that's what tells us how hard you hit.
+	var how_fast_you_were_falling = velocity.y
+
 	move_and_slide()
+	land_with_a_thump(delta, how_fast_you_were_falling)
 	choose_picture(delta)
 
 	# Fell off the bottom? Lose a heart and go back to the checkpoint.
@@ -188,6 +202,11 @@ func climb():
 	# Nowhere near a ladder? Then there's nothing to hold on to.
 	if ladder_squares == 0:
 		climbing = false
+		return
+
+	# Just jumped off? Don't grab straight back on, or holding UP
+	# while you jump would glue you to the ladder for ever.
+	if clock < ignore_ladders_until:
 		return
 
 	# Up gives -1, down gives 1, nothing gives 0.
@@ -246,6 +265,7 @@ func jump():
 		elif climbing:
 			# Let go of the ladder and spring off it.
 			climbing = false
+			ignore_ladders_until = clock + 0.3
 			velocity.y = JUMP_STRENGTH
 			$JumpSound.play()
 		elif time_since_on_floor < COYOTE_TIME:
@@ -309,6 +329,16 @@ func choose_picture(delta):
 	else:
 		$Body.texture = pictures[0]
 
+	# Squash and stretch. Rising, the cat pulls tall and thin;
+	# dropping, it stretches out. Landing squashes it flat, and this
+	# is what springs it back. Animators have done this for a hundred
+	# years to stop things looking like stiff cardboard.
+	var want = Vector2.ONE
+	if not is_on_floor() and not is_swimming():
+		var how_hard = clampf(velocity.y / 420.0, -1.0, 1.0)
+		want = Vector2(1.0 - absf(how_hard) * 0.15, 1.0 + absf(how_hard) * 0.15)
+	$Body.scale = $Body.scale.lerp(want, minf(1.0, delta * 13.0))
+
 	# Holding a diamond? Cycle through the rainbow so it's obvious.
 	# The last second and a half flickers, as a warning it's running out.
 	if is_invincible():
@@ -323,6 +353,40 @@ func choose_picture(delta):
 	$Body.modulate = Color.WHITE
 	if clock < safe_until:
 		$Body.modulate.a = 0.35 if fmod(clock, 0.16) < 0.08 else 1.0
+
+
+# ---- Looking alive ----
+
+# Drops a puff of dots at the cat's feet (or wherever you say).
+func make_a_puff(colour, how_many, how_far, where_up := 8.0):
+	var puff = puff_scene.instantiate()
+	puff.colour = colour
+	puff.how_many = how_many
+	puff.how_far = how_far
+	puff.position = position + Vector2(0, where_up)
+	get_parent().add_child.call_deferred(puff)
+
+
+# Spots the moment you touch down, kicks up dust, and squashes the
+# cat flat for a split second. Also puffs when you skid.
+func land_with_a_thump(delta, how_fast_you_were_falling):
+	var just_landed = is_on_floor() and not was_on_floor
+	was_on_floor = is_on_floor()
+
+	if just_landed and how_fast_you_were_falling > 220.0 and not is_swimming():
+		# Squash. choose_picture springs it back out again.
+		$Body.scale = Vector2(1.35, 0.68)
+		make_a_puff(Color(0.85, 0.78, 0.62), 7, 24.0)
+
+	# Skidding: on the floor, running one way, pressing the other.
+	skid_timer -= delta
+	var pressing = Input.get_axis("ui_left", "ui_right")
+	var skidding = is_on_floor() and not is_swimming() \
+		and pressing != 0 and absf(velocity.x) > 60.0 \
+		and signf(pressing) != signf(velocity.x)
+	if skidding and skid_timer <= 0.0:
+		skid_timer = 0.09
+		make_a_puff(Color(0.85, 0.78, 0.62), 3, 14.0)
 
 
 # ---- Things the rest of the world asks the cat to do ----
@@ -380,6 +444,7 @@ func enter_water():
 		velocity.y = minf(velocity.y, FASTEST_YOU_CAN_SINK)
 		climbing = false
 		$SplashSound.play()
+		make_a_puff(Color(0.55, 0.85, 1.0), 9, 30.0, 0.0)
 
 
 func leave_water():
@@ -389,6 +454,7 @@ func leave_water():
 	# being put away, because a sound can't play from nowhere.
 	if water_squares == 0 and is_inside_tree():
 		$SplashSound.play()
+		make_a_puff(Color(0.55, 0.85, 1.0), 6, 22.0, 0.0)
 
 
 # ---- Ladders ----

@@ -22,6 +22,7 @@ godot --path "$HOME/Super Snack Cat"
 | Space Space (quick) | Shoot a fireball — only after you drink the coffee |
 | R | Start the level over |
 | F | Full screen on and off (Esc also gets you out) |
+| P | Options — music and sound volume sliders |
 
 ## Hearts
 
@@ -54,6 +55,15 @@ already had.
 
 Adding a new colour is one line in `BLOCK_COLOURS` at the top of
 `scripts/cat_world.gd`.
+
+## Volume
+
+Press **P** for the options box. Two sliders: one for the music, one for
+every other sound. Sliding one all the way down mutes it completely.
+
+Whatever you set is remembered, so the game starts that way next time.
+It's kept in a small file the game writes for itself, nothing you have to
+look after.
 
 ## The music
 

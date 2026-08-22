@@ -33,41 +33,51 @@ position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
 [node name="JumpSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("3_jump")
 volume_db = -6.0
 
 [node name="CoinSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("4_coin")
 volume_db = -6.0
 
 [node name="StompSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("5_stomp")
 volume_db = -6.0
 
 [node name="HurtSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("6_hurt")
 volume_db = -6.0
 
 [node name="WinSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("7_win")
 volume_db = -4.0
 
 [node name="CheckpointSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("8_check")
 volume_db = -6.0
 
 [node name="PowerUpSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("9_power")
 volume_db = -4.0
 
 [node name="FireballSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("10_fire")
 volume_db = -10.0
 
 [node name="SplashSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("11_splash")
 volume_db = -8.0
 
 [node name="KeySound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("12_key")
 volume_db = -5.0

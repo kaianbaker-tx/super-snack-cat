@@ -44,11 +44,11 @@ const LEVEL_ONE = [
 	"................................................................................................................",
 	"......................................................................E.........................................",
 	".................................E.............................................CC.......E.......................",
-	".................................................CCCCC.........................k................................",
+	"................................................=CCCCC.........................k................................",
 	"...............................................G=BB?BB..........CCC............GG...............................",
 	".................BRB..........................GD=........=......GGG..BNB......GDDG..............................",
-	"............R...CCC.........CCC....U.........GDD=........=.....UDDD..........GDDDDG.....C.C.C.C....?............",
-	"............................................GDDD=........=BB.BB.............GDDDDDDG...........B.........W......",
+	"............R...CCC.........CCC....U.........GDD=.....BBB=.....UDDD..........GDDDDG.....C.C.C.C....?............",
+	"............................................GDDD=........=..................GDDDDDDG...........B.........W......",
 	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
 	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
 	"DDDDDDDDDDDDDDDDDDDDDDDD~~~DDDDDDDDDDDDD...DDDDDDDDDDDDDDD~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -110,6 +110,11 @@ static var level_number := 0
 # The level being played right now, copied out of ALL_LEVELS.
 var level = []
 
+# Every square of water that's at the surface, so we can make them
+# ripple together.
+var rippling_water = []
+var ripple_clock = 0.0
+
 
 # Every square in the picture file is 18 pixels across.
 const TILE = 18
@@ -122,10 +127,14 @@ const TREE = 126
 const BUSH = 124
 const LADDER = 71
 
-# Water needs two pictures: one with waves on top for the surface,
-# and a plain one for everything underneath it.
+# Water needs three pictures: two different wavy tops that we flip
+# between so the surface ripples, and a plain one for underneath.
 const WATER_SURFACE = 33
+const WATER_SURFACE_2 = 53
 const DEEP_WATER = 73
+
+# How many times a second the surface flips between its two pictures.
+const RIPPLE_SPEED = 2.5
 
 # The two hearts on the score board — a full one and an empty one.
 const FULL_HEART = 44
@@ -155,7 +164,7 @@ const BLOCK_COLOURS = {
 
 # How loud the background music is. 0 is full blast, -15 is normal
 # background music, -24 is so quiet you almost don't notice it.
-const MUSIC_LOUDNESS = -24.0
+const MUSIC_LOUDNESS = -14.0
 
 # Which of Kenney's retro loops each level plays. Swap any of these
 # for another name in the list and that level's music changes.
@@ -279,6 +288,23 @@ func _unhandled_input(event):
 	# never trap you.
 	elif event.keycode == KEY_ESCAPE and full_screen_now:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+
+# ---- Making the water move ----
+
+# Flips every surface square between its two pictures, over and over,
+# so the water looks like it's lapping instead of frozen solid.
+func _process(delta):
+	if rippling_water.is_empty():
+		return
+
+	ripple_clock += delta * RIPPLE_SPEED
+	var which = WATER_SURFACE if int(ripple_clock) % 2 == 0 else WATER_SURFACE_2
+	var picture = Rect2(
+		(which % 20) * TILE, floori(which / 20.0) * TILE, TILE, TILE)
+
+	for square in rippling_water:
+		square.region_rect = picture
 
 
 # ---- Reading the level ----
@@ -413,6 +439,10 @@ func draw_water(x, y):
 		TILE, TILE)
 	sprite.position = middle_of(x, y)
 	$Water.add_child(sprite)
+
+	# Remember the top squares, so we can ripple them.
+	if picture_number == WATER_SURFACE:
+		rippling_water.append(sprite)
 
 
 # Water and ladders don't stop you moving, so they don't get an

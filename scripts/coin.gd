@@ -24,6 +24,17 @@ func _process(delta):
 
 
 func _someone_touched_me(who):
-	if who.has_method("collect_coin"):
-		who.collect_coin()
-		queue_free()
+	if not who.has_method("collect_coin"):
+		return
+	who.collect_coin()
+
+	# Leave a little gold sparkle behind where the coin was.
+	var sparkle = preload("res://scenes/puff.tscn").instantiate()
+	sparkle.colour = Color(1.0, 0.85, 0.3)
+	sparkle.how_many = 6
+	sparkle.how_far = 18.0
+	sparkle.how_long = 0.35
+	sparkle.position = position
+	get_parent().add_child.call_deferred(sparkle)
+
+	queue_free()

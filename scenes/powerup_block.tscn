@@ -33,9 +33,11 @@ position = Vector2(0, 10)
 shape = SubResource("Shape_under")
 
 [node name="BonkSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("3_bonk")
 volume_db = -9.0
 
 [node name="PopSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("4_pop")
 volume_db = -7.0

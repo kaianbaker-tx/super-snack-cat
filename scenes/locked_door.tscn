@@ -31,5 +31,6 @@ collision_mask = 4
 shape = SubResource("Shape_reach")
 
 [node name="UnlockSound" type="AudioStreamPlayer" parent="."]
+bus = &"Sound"
 stream = ExtResource("3_unlock")
 volume_db = -6.0
