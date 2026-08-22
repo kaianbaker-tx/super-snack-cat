@@ -144,6 +144,7 @@ func _ready():
 	level = ALL_LEVELS[level_number]
 	RenderingServer.set_default_clear_color(LEVEL_SKIES[level_number])
 
+	build_the_background()
 	draw_all_the_tiles()
 	build_the_invisible_walls()
 	place_all_the_things()
@@ -184,6 +185,22 @@ func middle_of(x, y):
 
 
 # ---- Drawing ----
+
+# Tells the background how big this level is, so it can build the
+# right number of hills. The grass in every level sits on the
+# second row from the bottom, which is where the hills should meet
+# the ground.
+func build_the_background():
+	var widest = 0
+	for row in level:
+		widest = maxi(widest, row.length())
+
+	$Background.build(
+		level_number,
+		widest * TILE,
+		level.size() * TILE,
+		(level.size() - 2) * TILE)
+
 
 # Cuts one little picture out of the tile sheet and hangs it up.
 func draw_tile(x, y, picture_number):

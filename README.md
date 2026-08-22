@@ -32,6 +32,7 @@ godot --path "$HOME/pixel mario"
 |---|---|
 | The levels (drawn with letters!) | `scripts/cat_world.gd` |
 | How the cat moves and jumps | `scripts/cat.gd` |
+| The faraway hills behind the level | `scripts/background.gd` |
 | Pictures | `assets/sprites/` |
 | Sounds | `assets/audio/` |
 | Art you can shop from | `~/GameAssets/Kenney/` |

@@ -1,11 +1,16 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/cat_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/cat.tscn" id="2_cat"]
+[ext_resource type="Script" path="res://scripts/background.gd" id="3_bg"]
 
 [node name="CatWorld" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_world")
+
+[node name="Background" type="Parallax2D" parent="."]
+z_index = -100
+script = ExtResource("3_bg")
 
 [node name="Tiles" type="Node2D" parent="."]
 

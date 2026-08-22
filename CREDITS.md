@@ -7,6 +7,9 @@ Assets used in this game, and where they came from.
 - Kenney Game Assets All-in-1 — <https://kenney.nl> — CC0 (no credit required)
   - `assets/sprites/pixel_tiles.png` — "Pixel Platformer" pack. The ground,
     boxes, coins, trees, flag and mushroom.
+  - `assets/sprites/pixel_backgrounds.png` — "Pixel Platformer" pack, the
+    backgrounds tilemap. The faraway hills, clouds and trees behind each
+    level.
 - Drawn pixel by pixel for this game, not from any pack:
   - the cat — `cat_idle.png`, `cat_walk1.png`, `cat_walk2.png`, `cat_jump.png`
   - the fire cat — `firecat_idle.png`, `firecat_walk1.png`,
