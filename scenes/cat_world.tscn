@@ -18,6 +18,9 @@ script = ExtResource("3_bg")
 
 [node name="Cat" parent="." instance=ExtResource("2_cat")]
 
+[node name="Water" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.62)
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="CoinLabel" type="Label" parent="HUD"]
@@ -49,3 +52,17 @@ theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 64
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Hearts" type="HBoxContainer" parent="HUD"]
+offset_left = 18.0
+offset_top = 54.0
+offset_right = 300.0
+offset_bottom = 90.0
+theme_override_constants/separation = 4
+
+[node name="Keys" type="HBoxContainer" parent="HUD"]
+offset_left = 18.0
+offset_top = 96.0
+offset_right = 300.0
+offset_bottom = 132.0
+theme_override_constants/separation = 4

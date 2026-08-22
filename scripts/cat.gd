@@ -45,14 +45,52 @@ const MOST_FIREBALLS_AT_ONCE = 2
 # How long you flash and can't be hurt after losing your fire powers.
 const SAFE_TIME_AFTER_A_HIT = 1.5
 
+# ---- Hearts ----
+
+# How many hits you can take. Lose them all and you go back to the
+# last checkpoint with a full set again.
+const HOW_MANY_HEARTS = 3
+
+# How hard a baddie knocks you backwards when it gets you.
+const KNOCKED_BACK = 130.0
+const KNOCKED_UP = -180.0
+
+# ---- Swimming (the ~ squares) ----
+
+# Water holds you up, so gravity is much gentler down there.
+const WATER_GRAVITY = 240.0
+
+# ...and it's thick, so you can't run or sink through it fast.
+const SWIMMING_SPEED = 95.0
+const FASTEST_YOU_CAN_SINK = 80.0
+
+# One push of the space bar underwater. Tap it over and over to
+# climb up through the water.
+const SWIM_STROKE = -145.0
+
+# ---- Climbing (the = squares) ----
+
+const CLIMBING_SPEED = 70.0
+
 
 # ---- Things the cat remembers while the game runs ----
 
 signal coins_changed(total)      # shouts the new number to the score board
+signal hearts_changed(left)      # shouts when you lose or refill a heart
+signal keys_changed(total)       # shouts when you pick up or use a key
 signal shout(words)              # asks for a message on screen
 signal finished                  # shouts once, when you eat the sandwich
 
 var coins := 0
+var hearts := HOW_MANY_HEARTS
+var keys := 0
+
+# How many water squares and ladder squares we're standing inside
+# right now. They're counted, not just true/false, because a big
+# pond is lots of little squares and you're often in two at once.
+var water_squares := 0
+var ladder_squares := 0
+var climbing := false
 var facing := 1                  # 1 = looking right, -1 = looking left
 var start_position := Vector2.ZERO
 var time_since_on_floor := 0.0
@@ -116,6 +154,7 @@ func _physics_process(delta):
 
 	clock += delta
 
+	climb()
 	fall(delta)
 	jump()
 	run(delta)
@@ -123,18 +162,54 @@ func _physics_process(delta):
 	move_and_slide()
 	choose_picture(delta)
 
-	# Fell off the bottom? Go back to the start.
+	# Fell off the bottom? Lose a heart and go back to the checkpoint.
 	if global_position.y > bottom_of_the_world:
-		ouch()
+		ouch(true)
+
+
+# Are we in the water right now?
+func is_swimming():
+	return water_squares > 0
+
+
+# Grab a ladder and go up or down it.
+func climb():
+	# Nowhere near a ladder? Then there's nothing to hold on to.
+	if ladder_squares == 0:
+		climbing = false
+		return
+
+	# Up gives -1, down gives 1, nothing gives 0.
+	var up_or_down = Input.get_axis("ui_up", "ui_down")
+
+	# Press up or down while you're on a ladder to grab it.
+	if up_or_down != 0:
+		climbing = true
+
+	if climbing:
+		velocity.y = up_or_down * CLIMBING_SPEED
 
 
 # Gravity pulls you down, harder on the way down than on the way up.
 func fall(delta):
+	# Hanging on a ladder beats gravity. That's the whole point
+	# of a ladder.
+	if climbing:
+		time_since_on_floor = 0.0
+		return
+
 	if is_on_floor():
 		time_since_on_floor = 0.0
 		return
 
 	time_since_on_floor += delta
+
+	# In water you drift down slowly instead of dropping like a rock.
+	if is_swimming():
+		velocity.y += WATER_GRAVITY * delta
+		velocity.y = minf(velocity.y, FASTEST_YOU_CAN_SINK)
+		return
+
 	if velocity.y < 0:
 		velocity.y += GRAVITY_GOING_UP * delta
 	else:
@@ -149,8 +224,19 @@ func jump():
 		var this_is_a_double_tap = clock - last_jump_press < DOUBLE_TAP_TIME
 		last_jump_press = clock
 
-		if this_is_a_double_tap and has_fire:
+		if is_swimming():
+			# Underwater EVERY press is a swimming stroke, even a
+			# double tap. Swimming up means tapping fast, and you'd
+			# never stop shooting fireballs by accident otherwise.
+			velocity.y = SWIM_STROKE
+			$JumpSound.play()
+		elif this_is_a_double_tap and has_fire:
 			shoot_a_fireball()
+		elif climbing:
+			# Let go of the ladder and spring off it.
+			climbing = false
+			velocity.y = JUMP_STRENGTH
+			$JumpSound.play()
 		elif time_since_on_floor < COYOTE_TIME:
 			# Standing on the floor, or only just stepped off it. Jump!
 			velocity.y = JUMP_STRENGTH
@@ -159,7 +245,9 @@ func jump():
 			$JumpSound.play()
 
 	# Let go of the key while still rising? Cut the jump short.
-	if Input.is_action_just_released("ui_accept") and velocity.y < SHORT_JUMP:
+	# Not in water though — a swimming stroke should always count.
+	if Input.is_action_just_released("ui_accept") \
+			and velocity.y < SHORT_JUMP and not is_swimming():
 		velocity.y = SHORT_JUMP
 
 
@@ -181,12 +269,15 @@ func run(delta):
 	# Left arrow gives -1, right arrow gives 1, nothing gives 0.
 	var direction = Input.get_axis("ui_left", "ui_right")
 
+	# Water is thick. You can't sprint through it.
+	var top_speed = SWIMMING_SPEED if is_swimming() else SPEED
+
 	if direction == 0:
 		# Nothing held: slide to a stop.
 		velocity.x = move_toward(velocity.x, 0.0, SLOWING_DOWN * delta)
 	else:
 		# Build up to full speed instead of snapping to it.
-		velocity.x = move_toward(velocity.x, direction * SPEED, SPEEDING_UP * delta)
+		velocity.x = move_toward(velocity.x, direction * top_speed, SPEEDING_UP * delta)
 		facing = 1 if direction > 0 else -1
 
 
@@ -215,6 +306,10 @@ func choose_picture(delta):
 
 
 # ---- Things the rest of the world asks the cat to do ----
+
+# Anything can ask the cat to put a message on the screen.
+func say(words):
+	shout.emit(words)
 
 # A coin calls this when you touch it.
 func collect_coin():
@@ -252,8 +347,70 @@ func drink_the_coffee():
 	$PowerUpSound.play()
 
 
+# ---- Water ----
+
+# A water square calls this when you swim into it.
+func enter_water():
+	water_squares += 1
+
+	# Only splash on the way IN, not for every square you cross.
+	if water_squares == 1:
+		# Hitting water kills your speed — no belly-flopping through
+		# a pond at full pelt.
+		velocity.y = minf(velocity.y, FASTEST_YOU_CAN_SINK)
+		climbing = false
+		$SplashSound.play()
+
+
+func leave_water():
+	water_squares = maxi(0, water_squares - 1)
+
+	# Climbing out gets a splash too — but not if the whole level is
+	# being put away, because a sound can't play from nowhere.
+	if water_squares == 0 and is_inside_tree():
+		$SplashSound.play()
+
+
+# ---- Ladders ----
+
+func touch_ladder():
+	ladder_squares += 1
+
+
+func leave_ladder():
+	ladder_squares = maxi(0, ladder_squares - 1)
+	if ladder_squares == 0:
+		climbing = false
+
+
+# ---- Keys ----
+
+# A key calls this when you pick it up.
+func take_a_key():
+	keys += 1
+	keys_changed.emit(keys)
+	$KeySound.play()
+	shout.emit("GOT A KEY!")
+
+
+# A locked door calls this. It hands back true if you had a key to
+# spend, and false if you didn't — that's how the door knows
+# whether to open.
+func use_a_key():
+	if keys <= 0:
+		say("LOCKED!\nFIND THE KEY")
+		return false
+	keys -= 1
+	keys_changed.emit(keys)
+	return true
+
+
+# ---- Getting hurt ----
+
 # Called when a baddie gets you, or you fall off the world.
-func ouch():
+# `sent_home` is true only for falling out of the world, where being
+# knocked backwards would just drop you out again.
+func ouch(sent_home := false):
 	if has_finished:
 		return
 
@@ -261,22 +418,40 @@ func ouch():
 	if clock < safe_until:
 		return
 
-	# With fire powers you only LOSE the powers — you don't go back
-	# to the checkpoint. Same as Mario losing his fire flower.
+	# With fire powers you only LOSE the powers — no heart lost.
+	# Same as Mario losing his fire flower.
 	if has_fire and not has_axe:
 		has_fire = false
 		safe_until = clock + SAFE_TIME_AFTER_A_HIT
 		$HurtSound.play()
 		return
 
-	# Holding the axe? You keep it, but you still get knocked back
-	# to the checkpoint if the dog gets you.
-	if has_axe:
-		safe_until = clock + SAFE_TIME_AFTER_A_HIT
-
+	hearts -= 1
+	hearts_changed.emit(hearts)
+	safe_until = clock + SAFE_TIME_AFTER_A_HIT
 	$HurtSound.play()
+
+	# Out of hearts. Back to the last checkpoint, with a fresh set.
+	if hearts <= 0:
+		hearts = HOW_MANY_HEARTS
+		hearts_changed.emit(hearts)
+		go_back_to_the_checkpoint()
+		return
+
+	if sent_home:
+		go_back_to_the_checkpoint()
+		return
+
+	# Still standing! Just get knocked backwards, and keep playing
+	# from right here.
+	velocity = Vector2(-facing * KNOCKED_BACK, KNOCKED_UP)
+	climbing = false
+
+
+func go_back_to_the_checkpoint():
 	global_position = start_position
 	velocity = Vector2.ZERO
+	climbing = false
 
 
 # The sandwich calls this. Level over — you did it!

@@ -15,6 +15,14 @@ extends Node2D
 #      P  a cup of coffee (fire powers!)
 #      H  a dog house          X  the dog boss        A  the axe
 #
+#   And the new stuff:
+#
+#      ^  spikes — they hurt          ~  water — you swim in it
+#      =  a ladder — press UP         k  a key
+#      L  a locked door (needs a key)
+#      E  a bat — it flies in a wavy line, you CAN stomp it
+#      O  a spiky ball — rolls at you, you CANNOT stomp it
+#
 #   Rows have to stay in order, but they can be any length.
 #   Try digging a pit, or building a tower of B's.
 # ============================================================
@@ -24,16 +32,16 @@ const LEVEL_ONE = [
 	"................................................................................................................",
 	"................................................................................................................",
 	"................................................................................................................",
-	"................................................................................................................",
-	"...............................................................................CC...............................",
-	".................................................CCCCC..........................................................",
-	"...............................................G.BB?BB..........CCC............GG...............................",
-	".................B?B..........................GD................GGG..B?B......GDDG..............................",
-	"................CCC.........CCC....?.........GDD................DDD..........GDDDDG.....C.C.C.C.................",
-	"............................................GDDD..........BB.BB.............GDDDDDDG.....................W......",
-	"...S....b....T.P.....M.....GGGGGF.M........GDDDD..M....M............M....F.GDDDDDDDDG.P..M...M...T..b..GGGGGG.T.",
-	"GGGGGGGGGGGGGGGGGGGGGGGG...GGGGGGGGGGGGG...GGGGGGGGGGGGGGG...GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-	"DDDDDDDDDDDDDDDDDDDDDDDD...DDDDDDDDDDDDD...DDDDDDDDDDDDDDD...DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+	"......................................................................E.........................................",
+	".................................E.............................................CC.......E.......................",
+	".................................................CCCCC.........................k................................",
+	"...............................................G.BB?BB..........CCC............GG..............B................",
+	".................B?B..........................GD.........=......GGG..B?B......GDDG.............B................",
+	"................CCC.........CCC....?.........GDD.........=......DDD..........GDDDDG.....C.C.C.CB................",
+	"............................................GDDD.........=BB.BB.............GDDDDDDG...........B.........W......",
+	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD..M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
+	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+	"DDDDDDDDDDDDDDDDDDDDDDDD~~~DDDDDDDDDDDDD...DDDDDDDDDDDDDDD~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 ]
 
 const LEVEL_TWO = [
@@ -41,16 +49,16 @@ const LEVEL_TWO = [
 	"..............................................................................................................",
 	"..............................................................................................................",
 	"..............................................................................................................",
-	"..............................................................................................................",
-	".............................................................CC.........................CCC...................",
-	".............................................................BB.........................GGG...................",
-	"......................................CCMC.........................................CCC..DDD...................",
-	"......................B?B...........GGGGGGG...............BB.......................GGG........................",
-	"..........CCC......................GDDDDDDDG......................B?B.........CCC..DDD........................",
-	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG......................W......",
-	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.......F......P....M..M.........DDD............M..M.T..GGGGGG.H.",
-	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-	"DDDDDDDDDDDDDDD....DDDDDDDDDDDDDDDDDDDDDDDDDDDD....DDDDDDDDDDDDDDDDDDDD....DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+	".........................E.....................................................................E..............",
+	".......................................................E.....CC.........................CCC..k................",
+	".............................................................BB.........................GGG=BBBB..............",
+	"......................................CCMC.........................................CCC..DDD=........B.........",
+	"......................B?B...........GGGGGGG...............BB.......................GGG.....=........B.........",
+	"..........CCC......................GDDDDDDDG......................B?B.........CCC..DDD.....=........B.........",
+	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
+	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
+	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+	"DDDDDDDDDDDDDDD....DDDDDDDDDDDDDDDDDDDDDDDDDDDD~~~~DDDDDDDDDDDDDDDDDDDD~~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 ]
 
 # The last level: inside the dog house, with the dog and the axe.
@@ -62,11 +70,11 @@ const LEVEL_THREE = [
 	"..............................................",
 	"..............................................",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-	"B............................................B",
-	"B...........CCC................CCC...........B",
-	"B...........BBB......BBBB......BBB...........B",
-	"B.........................................A..B",
-	"B..S..P..B..............X.............B..BBB.B",
+	"B...................E.........E........B.....B",
+	"B...........CCC.......k........CCC.....B.....B",
+	"B...........BBB......BBBB......BBB.....B.....B",
+	"B......................................B..A..B",
+	"B..S..P..B...^^....O....X.............BL.BBB.B",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 ]
@@ -103,6 +111,22 @@ const WOODEN_BOX = 6
 const QUESTION_BOX = 10
 const TREE = 126
 const BUSH = 124
+const LADDER = 71
+
+# Water needs two pictures: one with waves on top for the surface,
+# and a plain one for everything underneath it.
+const WATER_SURFACE = 33
+const DEEP_WATER = 73
+
+# The two hearts on the score board — a full one and an empty one.
+const FULL_HEART = 44
+const EMPTY_HEART = 46
+
+# The key picture, for showing how many keys you're carrying.
+const KEY_PICTURE = 27
+
+# How big the score board pictures are, next to the words.
+const SCOREBOARD_PICTURE_SIZE = 36
 
 # The dog house is far too big for one square, so it gets its own
 # picture file instead of coming out of the tile sheet.
@@ -138,6 +162,16 @@ var sandwich_scene = preload("res://scenes/sandwich.tscn")
 var coffee_scene = preload("res://scenes/coffee.tscn")
 var dog_scene = preload("res://scenes/dog.tscn")
 var axe_scene = preload("res://scenes/axe.tscn")
+var spikes_scene = preload("res://scenes/spikes.tscn")
+var key_scene = preload("res://scenes/key.tscn")
+var locked_door_scene = preload("res://scenes/locked_door.tscn")
+var bat_scene = preload("res://scenes/bat.tscn")
+var spiky_ball_scene = preload("res://scenes/spiky_ball.tscn")
+
+# The two little scripts that make a square of water wet and a
+# square of ladder climbable.
+var water_script = preload("res://scripts/water.gd")
+var ladder_script = preload("res://scripts/ladder.gd")
 
 
 func _ready():
@@ -147,14 +181,20 @@ func _ready():
 	build_the_background()
 	draw_all_the_tiles()
 	build_the_invisible_walls()
+	build_the_wet_and_climbable_bits()
 	place_all_the_things()
 	set_up_the_camera()
 
 	# Keep the score board up to date.
+	build_the_hearts()
 	$Cat.coins_changed.connect(show_coins)
+	$Cat.hearts_changed.connect(show_hearts)
+	$Cat.keys_changed.connect(show_keys)
 	$Cat.finished.connect(show_level_done)
 	$Cat.shout.connect(show_a_message)
 	show_coins(0)
+	show_hearts($Cat.hearts)
+	show_keys(0)
 
 
 # ---- Reading the level ----
@@ -266,8 +306,62 @@ func draw_all_the_tiles():
 				draw_tile(x, y, TREE)
 			elif letter == "b":
 				draw_tile(x, y, BUSH)
+			elif letter == "=":
+				draw_tile(x, y, LADDER)
+			elif letter == "~":
+				draw_water(x, y)
 			elif letter == "H":
 				draw_big_picture(doghouse_picture, x, y)
+
+
+# Water goes on TOP of the cat, not behind it, so that swimming
+# looks like being underwater instead of standing in front of a
+# blue wall. Only the very top square gets the wavy picture.
+func draw_water(x, y):
+	var picture_number = DEEP_WATER
+	if letter_at(x, y - 1) != "~":
+		picture_number = WATER_SURFACE
+
+	var sprite = Sprite2D.new()
+	sprite.texture = tiles_picture
+	sprite.region_enabled = true
+	sprite.region_rect = Rect2(
+		(picture_number % 20) * TILE,
+		floori(picture_number / 20.0) * TILE,
+		TILE, TILE)
+	sprite.position = middle_of(x, y)
+	$Water.add_child(sprite)
+
+
+# Water and ladders don't stop you moving, so they don't get an
+# invisible wall. Instead each square gets an invisible SENSOR that
+# tells the cat "you're swimming now" or "you can climb here".
+func build_the_wet_and_climbable_bits():
+	for y in level.size():
+		for x in level[y].length():
+			var letter = letter_at(x, y)
+			if letter == "~":
+				add_sensor(water_script, x, y, TILE, TILE)
+			elif letter == "=":
+				# A bit narrower than the square, so you have to be
+				# properly on the ladder to climb it.
+				add_sensor(ladder_script, x, y, 10, TILE)
+
+
+func add_sensor(which_script, x, y, wide, tall):
+	var sensor = Area2D.new()
+	sensor.set_script(which_script)
+	sensor.collision_layer = 0
+	sensor.collision_mask = 4          # 4 is the cat's layer
+	sensor.position = middle_of(x, y)
+
+	var box = RectangleShape2D.new()
+	box.size = Vector2(wide, tall)
+	var shape = CollisionShape2D.new()
+	shape.shape = box
+	sensor.add_child(shape)
+
+	$Things.add_child(sensor)
 
 
 # ---- Bumping into things ----
@@ -326,6 +420,16 @@ func place_all_the_things():
 				add_thing(dog_scene, x, y)
 			elif letter == "A":
 				add_thing(axe_scene, x, y)
+			elif letter == "^":
+				add_thing(spikes_scene, x, y)
+			elif letter == "k":
+				add_thing(key_scene, x, y)
+			elif letter == "L":
+				add_thing(locked_door_scene, x, y)
+			elif letter == "E":
+				add_thing(bat_scene, x, y)
+			elif letter == "O":
+				add_thing(spiky_ball_scene, x, y)
 			elif letter == "S":
 				$Cat.position = middle_of(x, y)
 				$Cat.start_position = $Cat.position
@@ -367,6 +471,57 @@ func show_a_message(words):
 
 func show_coins(total):
 	$HUD/CoinLabel.text = "Level %d       Coins: %d" % [level_number + 1, total]
+
+
+# ---- Hearts and keys ----
+
+# Cuts one picture out of the tile sheet, ready to hang on the
+# score board. Same idea as draw_tile, but for the HUD, which wants
+# a picture rather than a sprite.
+func scoreboard_picture(picture_number):
+	var picture = AtlasTexture.new()
+	picture.atlas = tiles_picture
+	picture.region = Rect2(
+		(picture_number % 20) * TILE,
+		floori(picture_number / 20.0) * TILE,
+		TILE, TILE)
+	return picture
+
+
+# Lay out one heart shape for every heart the cat can have. They
+# get filled in or emptied later — we never add or remove them, so
+# the row never jumps about.
+func build_the_hearts():
+	for i in $Cat.HOW_MANY_HEARTS:
+		var heart = TextureRect.new()
+		heart.custom_minimum_size = Vector2(
+			SCOREBOARD_PICTURE_SIZE, SCOREBOARD_PICTURE_SIZE)
+		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		$HUD/Hearts.add_child(heart)
+
+
+func show_hearts(left):
+	var i = 0
+	for heart in $HUD/Hearts.get_children():
+		heart.texture = scoreboard_picture(FULL_HEART if i < left else EMPTY_HEART)
+		i += 1
+
+
+# Keys come and go, so unlike hearts we build this row fresh each
+# time. No keys means an empty row, which is exactly what we want.
+func show_keys(total):
+	for old_key in $HUD/Keys.get_children():
+		old_key.queue_free()
+
+	for i in total:
+		var key = TextureRect.new()
+		key.custom_minimum_size = Vector2(
+			SCOREBOARD_PICTURE_SIZE, SCOREBOARD_PICTURE_SIZE)
+		key.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		key.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		key.texture = scoreboard_picture(KEY_PICTURE)
+		$HUD/Keys.add_child(key)
 
 
 # The cat shouts when it eats the sandwich.

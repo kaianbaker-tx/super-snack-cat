@@ -10,6 +10,8 @@ Assets used in this game, and where they came from.
   - `assets/sprites/pixel_backgrounds.png` — "Pixel Platformer" pack, the
     backgrounds tilemap. The faraway hills, clouds and trees behind each
     level.
+  - `assets/sprites/pixel_characters.png` — "Pixel Platformer" pack, the
+    characters tilemap. The bat and the spiky ball.
 - Drawn pixel by pixel for this game, not from any pack:
   - the cat — `cat_idle.png`, `cat_walk1.png`, `cat_walk2.png`, `cat_jump.png`
   - the fire cat — `firecat_idle.png`, `firecat_walk1.png`,
@@ -24,7 +26,11 @@ Assets used in this game, and where they came from.
   - `cat_jump.ogg`, `cat_coin.ogg`, `cat_stomp.ogg`, `cat_hurt.ogg`,
     `cat_win.ogg`, `cat_checkpoint.ogg`, `cat_powerup.ogg`, `cat_fireball.ogg`,
     `dog_beaten.ogg`, `clang.ogg` — "Retro Sounds 2" pack
-  - `dog_bark.ogg` — "Retro Sounds 1" pack
+  - `dog_bark.ogg`, `key_pickup.ogg` — "Retro Sounds 1" pack
+  - `unlock.ogg` (a door opening) and `splash.ogg` (hitting the water) —
+    "Retro Sounds 2" pack. These two were picked to match, not recorded for
+    the job — if either sounds wrong, swap it for another file from the same
+    pack and nothing else has to change.
 
 ## Fonts
 

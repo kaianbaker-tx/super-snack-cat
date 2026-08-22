@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/locked_door.gd" id="1_door"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pixel_tiles.png" id="2_tiles"]
+[ext_resource type="AudioStream" path="res://assets/audio/unlock.ogg" id="3_unlock"]
+
+[sub_resource type="RectangleShape2D" id="Shape_door"]
+size = Vector2(18, 18)
+
+[sub_resource type="RectangleShape2D" id="Shape_reach"]
+size = Vector2(26, 22)
+
+[node name="LockedDoor" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_door")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tiles")
+region_enabled = true
+region_rect = Rect2(144, 18, 18, 18)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_door")
+
+[node name="Reach" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Reach"]
+shape = SubResource("Shape_reach")
+
+[node name="UnlockSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_unlock")
+volume_db = -6.0
