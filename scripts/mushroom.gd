@@ -48,6 +48,12 @@ func _someone_touched_me(who):
 	if not who.has_method("stomp"):
 		return
 
+	# The cat is holding a diamond? Then it doesn't matter which way
+	# round we are — we lose.
+	if who.is_invincible():
+		get_squashed(null)
+		return
+
 	# Was the cat falling, and above us? Then it landed on our head.
 	if who.velocity.y > 0 and who.global_position.y < global_position.y - 4:
 		get_squashed(who)

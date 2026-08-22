@@ -21,16 +21,46 @@ godot --path "$HOME/Super Snack Cat"
 | ↑ ↓ | Climb a ladder |
 | Space Space (quick) | Shoot a fireball — only after you drink the coffee |
 | R | Start the level over |
-| F | Fill the whole screen (F again to come back) |
+| F | Full screen on and off (Esc also gets you out) |
 
 ## Hearts
 
-You start every level with **three hearts**, shown under the score.
+You start every level with **three hearts**, shown under the score. Red
+blocks can push you up to **five**.
 
 - A baddie takes one heart and knocks you backwards. You keep playing.
 - Fire powers act as a shield — the first hit takes those instead of a heart.
 - Lose all three and you go back to the last checkpoint flag with a
   fresh set of three.
+
+## Power-up blocks
+
+Jump up and **bonk a block with your head**. What comes out depends on its
+colour:
+
+| Block | What comes out |
+|---|---|
+| **Gold** | A coin, straight into your pocket |
+| **Red** | A heart — one of your lost ones back |
+| **Green** | A cup of coffee, for fire powers |
+| **Blue** | A **diamond** |
+
+The diamond makes you **untouchable for 8 seconds**. You flash through the
+rainbow, nothing can hurt you, and anything you run into gets flattened —
+including a spiky ball, which is the only way to beat one.
+
+A used-up block goes dark, so you can see at a glance which ones you've
+already had.
+
+Adding a new colour is one line in `BLOCK_COLOURS` at the top of
+`scripts/cat_world.gd`.
+
+## The music
+
+Quiet 8-bit loops from Kenney's retro pack. `LEVEL_MUSIC` near the top of
+`scripts/cat_world.gd` says which level plays which, and `MUSIC_LOUDNESS`
+right above it sets how loud (it's set very low on purpose — `-24`).
+All five tracks are already in `assets/audio/`.
 
 ## The three levels
 

@@ -51,6 +51,14 @@ const SAFE_TIME_AFTER_A_HIT = 1.5
 # last checkpoint with a full set again.
 const HOW_MANY_HEARTS = 3
 
+# Hearts out of RED blocks can push you past your starting three,
+# up to this many. The score board always shows all the slots, so
+# you can see how many you've still got room for.
+const MOST_HEARTS = 5
+
+# How long a diamond keeps you safe, in seconds.
+const DIAMOND_TIME = 8.0
+
 # How hard a baddie knocks you backwards when it gets you.
 const KNOCKED_BACK = 130.0
 const KNOCKED_UP = -180.0
@@ -91,6 +99,9 @@ var keys := 0
 var water_squares := 0
 var ladder_squares := 0
 var climbing := false
+
+# While the clock is below this, a diamond is protecting you.
+var diamond_until := -99.0
 var facing := 1                  # 1 = looking right, -1 = looking left
 var start_position := Vector2.ZERO
 var time_since_on_floor := 0.0
@@ -298,11 +309,20 @@ func choose_picture(delta):
 	else:
 		$Body.texture = pictures[0]
 
+	# Holding a diamond? Cycle through the rainbow so it's obvious.
+	# The last second and a half flickers, as a warning it's running out.
+	if is_invincible():
+		var running_out = diamond_until - clock < 1.5
+		if running_out and fmod(clock, 0.14) < 0.07:
+			$Body.modulate = Color.WHITE
+		else:
+			$Body.modulate = Color.from_hsv(fmod(clock * 1.6, 1.0), 0.65, 1.0)
+		return
+
 	# Flash on and off while you're briefly safe after being hit.
+	$Body.modulate = Color.WHITE
 	if clock < safe_until:
 		$Body.modulate.a = 0.35 if fmod(clock, 0.16) < 0.08 else 1.0
-	else:
-		$Body.modulate.a = 1.0
 
 
 # ---- Things the rest of the world asks the cat to do ----
@@ -383,6 +403,34 @@ func leave_ladder():
 		climbing = false
 
 
+# ---- Hearts and diamonds ----
+
+# A heart out of a red block calls this.
+func heal():
+	if hearts >= MOST_HEARTS:
+		# Already carrying as many as you can. Have a coin instead,
+		# so picking it up never feels like a waste.
+		collect_coin()
+		return
+
+	hearts += 1
+	hearts_changed.emit(hearts)
+	$PowerUpSound.play()
+
+
+# A diamond calls this. Nothing can hurt you for a few seconds, and
+# anything you touch gets flattened.
+func go_invincible():
+	diamond_until = clock + DIAMOND_TIME
+	$PowerUpSound.play()
+	say("UNTOUCHABLE!")
+
+
+# The baddies ask this before they decide what to do about you.
+func is_invincible():
+	return clock < diamond_until
+
+
 # ---- Keys ----
 
 # A key calls this when you pick it up.
@@ -412,6 +460,10 @@ func use_a_key():
 # knocked backwards would just drop you out again.
 func ouch(sent_home := false):
 	if has_finished:
+		return
+
+	# Holding a diamond? Nothing gets through at all.
+	if is_invincible():
 		return
 
 	# Just been hit? Nothing can touch you for a moment.

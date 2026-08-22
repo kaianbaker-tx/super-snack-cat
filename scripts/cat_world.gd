@@ -10,7 +10,7 @@ extends Node2D
 #      G  grass ground         M  a mushroom baddie
 #      D  dirt                 T  a tree
 #      B  a wooden box         b  a bush
-#      ?  a question box       S  where the cat starts
+#      S  where the cat starts
 #      F  a checkpoint flag    W  the sandwich (finish!)
 #      P  a cup of coffee (fire powers!)
 #      H  a dog house          X  the dog boss        A  the axe
@@ -22,6 +22,16 @@ extends Node2D
 #      L  a locked door (needs a key)
 #      E  a bat — it flies in a wavy line, you CAN stomp it
 #      O  a spiky ball — rolls at you, you CANNOT stomp it
+#
+#   And the power-up blocks. Bonk them from underneath with your
+#   head and something comes out. The colour says what:
+#
+#      ?  gold block   →  a coin
+#      R  RED block    →  a heart, to get a lost one back
+#      N  GREEN block  →  a cup of coffee, for fire powers
+#      U  BLUE block   →  a diamond — nothing can hurt you for
+#                          a few seconds, and you flatten anything
+#                          you touch, even a spiky ball
 #
 #   Rows have to stay in order, but they can be any length.
 #   Try digging a pit, or building a tower of B's.
@@ -36,8 +46,8 @@ const LEVEL_ONE = [
 	".................................E.............................................CC.......E.......................",
 	".................................................CCCCC.........................k................................",
 	"...............................................G=BB?BB..........CCC............GG...............................",
-	".................B?B..........................GD=........=......GGG..B?B......GDDG..............................",
-	"................CCC.........CCC....?.........GDD=........=......DDD..........GDDDDG.....C.C.C.C.................",
+	".................BRB..........................GD=........=......GGG..BNB......GDDG..............................",
+	"............R...CCC.........CCC....U.........GDD=........=.....UDDD..........GDDDDG.....C.C.C.C....?............",
 	"............................................GDDD=........=BB.BB.............GDDDDDDG...........B.........W......",
 	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
 	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -53,8 +63,8 @@ const LEVEL_TWO = [
 	".......................................................E.....CC.........................CCC..k................",
 	".............................................................BB.........................GGG=BBBB..............",
 	"......................................CCMC.........................................CCC..DDD=..................",
-	"......................B?B...........GGGGGGG...............BB.......................GGG.....=..................",
-	"..........CCC......................GDDDDDDDG......................B?B.........CCC..DDD.....=..................",
+	"......................BNB...........GGGGGGG...............BB.......................GGG.....=..................",
+	"..........CCC.R....................GDDDDDDDG.......?..............BUB.........CCC..DDD.....=..................",
 	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
 	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
 	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -72,7 +82,7 @@ const LEVEL_THREE = [
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 	"B...................E.........E..............B",
 	"B...........CCC.......k........CCC...........B",
-	"B...........BBB......BBBB......BBB...........B",
+	"B...........BBB...R..BBBB...U..BBB..?........B",
 	"B......................................B..A..B",
 	"B..S..P..B...^^....O....X.............BL.BBB.B",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -108,7 +118,6 @@ const TILE = 18
 # "3rd along, 2nd row down". Open assets/sprites/pixel_tiles.png
 # and count if you want to swap any of these for something else.
 const WOODEN_BOX = 6
-const QUESTION_BOX = 10
 const TREE = 126
 const BUSH = 124
 const LADDER = 71
@@ -128,6 +137,36 @@ const KEY_PICTURE = 27
 # How big the score board pictures are, next to the words.
 const SCOREBOARD_PICTURE_SIZE = 36
 
+# ---- The power-up blocks ----
+#
+# Every one is the same block picture painted a different colour.
+# Want a purple one that gives you a key? Add a line here, pick a
+# spare letter, and add it to place_all_the_things below.
+#
+#            letter : [ what comes out,  what colour to paint it ]
+const BLOCK_COLOURS = {
+	"?": ["coin",    Color(1.00, 1.00, 1.00)],   # gold — left as it is
+	"R": ["heart",   Color(1.00, 0.42, 0.42)],   # red
+	"N": ["coffee",  Color(0.45, 1.00, 0.55)],   # green
+	"U": ["diamond", Color(0.45, 0.72, 1.00)],   # blue
+}
+
+# ---- The music ----
+
+# How loud the background music is. 0 is full blast, -15 is normal
+# background music, -24 is so quiet you almost don't notice it.
+const MUSIC_LOUDNESS = -24.0
+
+# Which of Kenney's retro loops each level plays. Swap any of these
+# for another name in the list and that level's music changes.
+#
+#      "retro_mystic"  slow and dreamy, 48 seconds  (the chill one)
+#      "retro_beat"    a steady drum groove, 15 seconds
+#      "retro_reggae"  bouncy, 8 seconds
+#      "retro_polka"   silly, 8 seconds
+#      "retro_comedy"  very silly, 6 seconds
+const LEVEL_MUSIC = ["retro_mystic", "retro_mystic", "retro_beat"]
+
 # The dog house is far too big for one square, so it gets its own
 # picture file instead of coming out of the tile sheet.
 var doghouse_picture = preload("res://assets/sprites/doghouse.png")
@@ -145,7 +184,9 @@ const DIRT_WITH_MORE_BELOW = [120, 121, 122, 123]
 const DIRT_AT_THE_BOTTOM = [140, 141, 142, 143]
 
 # Letters that the cat cannot walk through.
-const SOLID_LETTERS = ["G", "D", "B", "?"]
+# The power-up blocks are NOT in here: each one is its own little
+# scene that brings its own collision along with it.
+const SOLID_LETTERS = ["G", "D", "B"]
 
 # Letters that count as ground when picking the pictures above.
 # Boxes don't count — they already have their own line round them.
@@ -167,6 +208,7 @@ var key_scene = preload("res://scenes/key.tscn")
 var locked_door_scene = preload("res://scenes/locked_door.tscn")
 var bat_scene = preload("res://scenes/bat.tscn")
 var spiky_ball_scene = preload("res://scenes/spiky_ball.tscn")
+var powerup_block_scene = preload("res://scenes/powerup_block.tscn")
 
 # The two little scripts that make a square of water wet and a
 # square of ladder climbable.
@@ -178,6 +220,7 @@ func _ready():
 	level = ALL_LEVELS[level_number]
 	RenderingServer.set_default_clear_color(LEVEL_SKIES[level_number])
 
+	start_the_music()
 	build_the_background()
 	draw_all_the_tiles()
 	build_the_invisible_walls()
@@ -197,6 +240,23 @@ func _ready():
 	show_keys(0)
 
 
+# ---- The music ----
+
+# Quiet background music that loops round and round forever.
+func start_the_music():
+	var tune = load("res://assets/audio/%s.ogg" % LEVEL_MUSIC[level_number])
+	tune.loop = true
+	$Music.stream = tune
+	$Music.volume_db = MUSIC_LOUDNESS
+	$Music.play()
+
+
+# When the level is put away — you pressed R, or finished it, or quit
+# the game — stop the music instead of leaving it playing into nothing.
+func _exit_tree():
+	$Music.stop()
+
+
 # ---- The window ----
 
 # Press F to fill the whole screen, and F again to come back.
@@ -205,13 +265,20 @@ func _ready():
 func _unhandled_input(event):
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
-	if event.keycode != KEY_F:
-		return
+	var full_screen_now = \
+		DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+	# F swaps between full screen and a window.
+	if event.keycode == KEY_F:
+		if full_screen_now:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+	# Escape always gets you back to a window, so full screen can
+	# never trap you.
+	elif event.keycode == KEY_ESCAPE and full_screen_now:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 # ---- Reading the level ----
@@ -317,8 +384,6 @@ func draw_all_the_tiles():
 				draw_tile(x, y, which_ground_picture(x, y))
 			elif letter == "B":
 				draw_tile(x, y, WOODEN_BOX)
-			elif letter == "?":
-				draw_tile(x, y, QUESTION_BOX)
 			elif letter == "T":
 				draw_tile(x, y, TREE)
 			elif letter == "b":
@@ -447,9 +512,22 @@ func place_all_the_things():
 				add_thing(bat_scene, x, y)
 			elif letter == "O":
 				add_thing(spiky_ball_scene, x, y)
+			elif letter in BLOCK_COLOURS:
+				add_a_power_up_block(letter, x, y)
 			elif letter == "S":
 				$Cat.position = middle_of(x, y)
 				$Cat.start_position = $Cat.position
+
+
+# Builds one power-up block, and tells it what it's holding and
+# what colour to be before it wakes up.
+func add_a_power_up_block(letter, x, y):
+	var recipe = BLOCK_COLOURS[letter]
+	var block = powerup_block_scene.instantiate()
+	block.gives = recipe[0]
+	block.colour = recipe[1]
+	block.position = middle_of(x, y)
+	$Things.add_child(block)
 
 
 func add_thing(scene, x, y):
@@ -509,7 +587,7 @@ func scoreboard_picture(picture_number):
 # get filled in or emptied later — we never add or remove them, so
 # the row never jumps about.
 func build_the_hearts():
-	for i in $Cat.HOW_MANY_HEARTS:
+	for i in $Cat.MOST_HEARTS:
 		var heart = TextureRect.new()
 		heart.custom_minimum_size = Vector2(
 			SCOREBOARD_PICTURE_SIZE, SCOREBOARD_PICTURE_SIZE)

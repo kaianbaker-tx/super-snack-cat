@@ -87,6 +87,11 @@ func _someone_touched_me(who):
 	if not who.has_method("stomp"):
 		return
 
+	# A cat holding a diamond knocks us out of the sky whatever we do.
+	if who.is_invincible():
+		get_knocked_out(null)
+		return
+
 	# Falling, and above us? That's a stomp.
 	if who.velocity.y > 0 and who.global_position.y < global_position.y - 4:
 		get_knocked_out(who)

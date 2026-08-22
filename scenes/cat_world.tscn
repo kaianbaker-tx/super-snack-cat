@@ -18,6 +18,8 @@ script = ExtResource("3_bg")
 
 [node name="Cat" parent="." instance=ExtResource("2_cat")]
 
+[node name="Music" type="AudioStreamPlayer" parent="."]
+
 [node name="Water" type="Node2D" parent="."]
 modulate = Color(1, 1, 1, 0.62)
 

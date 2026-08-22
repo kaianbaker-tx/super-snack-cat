@@ -45,7 +45,36 @@ func _physics_process(delta):
 	$Sprite.rotation += direction * SPEED * SPIN * delta
 
 
+var smashed := false
+
+
 func _someone_touched_me(who):
+	if smashed:
+		return
+	if not who.has_method("ouch"):
+		return
+
+	# There is exactly one way to beat a spiky ball, and it's a
+	# diamond. Jumping on it will never work.
+	if who.is_invincible():
+		get_smashed()
+		return
+
 	# No stomping. No mercy. Spikes on every side.
-	if who.has_method("ouch"):
-		who.ouch()
+	who.ouch()
+
+
+func get_smashed():
+	smashed = true
+	$Hitbox.set_deferred("monitoring", false)
+	set_physics_process(false)
+
+	# Fly off sideways, spinning, and fade out.
+	var fly = create_tween()
+	fly.set_parallel(true)
+	fly.tween_property(self, "position:y", position.y - 30.0, 0.6)
+	fly.tween_property(self, "position:x", position.x + direction * 40.0, 0.6)
+	fly.tween_property($Sprite, "rotation", $Sprite.rotation + TAU * 2.0, 0.6)
+	fly.tween_property($Sprite, "modulate:a", 0.0, 0.6)
+	await fly.finished
+	queue_free()

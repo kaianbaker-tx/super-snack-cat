@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/heart.gd" id="1_heart"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pixel_tiles.png" id="2_tiles"]
+
+[sub_resource type="RectangleShape2D" id="Shape_heart"]
+size = Vector2(14, 13)
+
+[node name="Heart" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_heart")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tiles")
+region_enabled = true
+region_rect = Rect2(72, 36, 18, 18)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_heart")

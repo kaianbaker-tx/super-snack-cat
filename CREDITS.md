@@ -27,10 +27,20 @@ Assets used in this game, and where they came from.
     `cat_win.ogg`, `cat_checkpoint.ogg`, `cat_powerup.ogg`, `cat_fireball.ogg`,
     `dog_beaten.ogg`, `clang.ogg` — "Retro Sounds 2" pack
   - `dog_bark.ogg`, `key_pickup.ogg` — "Retro Sounds 1" pack
+  - `block_bump.ogg`, `block_pop.ogg` — "Retro Sounds 2" pack, for bonking
+    a power-up block and for whatever jumps out of it
   - `unlock.ogg` (a door opening) and `splash.ogg` (hitting the water) —
     "Retro Sounds 2" pack. These two were picked to match, not recorded for
     the job — if either sounds wrong, swap it for another file from the same
     pack and nothing else has to change.
+
+## Music
+
+- Kenney Game Assets All-in-1 — <https://kenney.nl> — CC0 (no credit required)
+  - `retro_mystic.ogg`, `retro_beat.ogg`, `retro_reggae.ogg`,
+    `retro_polka.ogg`, `retro_comedy.ogg` — the "Retro" folder of the
+    "Music Loops" pack. All five are in the game; which one each level
+    plays is set by `LEVEL_MUSIC` at the top of `scripts/cat_world.gd`.
 
 ## Fonts
 
