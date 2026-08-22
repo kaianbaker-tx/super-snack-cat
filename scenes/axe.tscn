@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/axe.gd" id="1_axe"]
+[ext_resource type="Texture2D" path="res://assets/sprites/axe.png" id="2_axe"]
+
+[sub_resource type="RectangleShape2D" id="Shape_axe"]
+size = Vector2(16, 18)
+
+[node name="Axe" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_axe")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_axe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_axe")

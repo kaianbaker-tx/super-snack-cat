@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/sandwich.gd" id="1_sand"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sandwich.png" id="2_food"]
+
+[sub_resource type="RectangleShape2D" id="Shape_sand"]
+size = Vector2(20, 16)
+
+[node name="Sandwich" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_sand")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_food")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_sand")

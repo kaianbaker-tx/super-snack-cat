@@ -1,0 +1,15 @@
+# Godot 4+ engine cache — regenerated on open, never commit
+.godot/
+
+# Godot Android build template
+/android/
+
+# Exported builds
+/build/
+/export/
+
+# Export presets can hold signing passwords
+export_presets.cfg
+
+# macOS
+.DS_Store

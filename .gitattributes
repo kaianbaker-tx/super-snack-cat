@@ -1,0 +1,9 @@
+# Normalize line endings for everything Git considers text
+* text=auto eol=lf
+
+# Binary game assets — keep Git's line-ending rule away from them
+*.png  -text
+*.ogg  -text
+*.wav  -text
+*.ttf  -text
+*.otf  -text
