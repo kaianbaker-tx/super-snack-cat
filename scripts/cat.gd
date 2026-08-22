@@ -42,6 +42,10 @@ const DOUBLE_TAP_TIME = 0.35
 # You can't have more than this many fireballs flying at once.
 const MOST_FIREBALLS_AT_ONCE = 2
 
+# The chicken nugget suit is stronger, so you get more nuggets in
+# the air at the same time.
+const MOST_NUGGETS_AT_ONCE = 4
+
 # How long you flash and can't be hurt after losing your fire powers.
 const SAFE_TIME_AFTER_A_HIT = 1.5
 
@@ -131,6 +135,7 @@ var walk_timer := 0.0
 var has_finished := false
 var has_axe := false           # true once you pick up the axe
 var has_fire := false          # true after you drink the coffee
+var wearing_nugget_suit := false   # true while you're a chicken nugget
 var last_jump_press := -99.0   # used to spot a double tap
 var clock := 0.0               # counts up forever, so we can time things
 var safe_until := -99.0        # nothing can hurt you until this time
@@ -153,6 +158,15 @@ var fire_pictures = [
 	preload("res://assets/sprites/firecat_walk1.png"),
 	preload("res://assets/sprites/firecat_walk2.png"),
 	preload("res://assets/sprites/firecat_jump.png"),
+]
+
+# And the same four again, in the chicken nugget suit. They're a
+# little bigger than the others, because a suit makes you bigger.
+var nugget_pictures = [
+	preload("res://assets/sprites/nuggetcat_idle.png"),
+	preload("res://assets/sprites/nuggetcat_walk1.png"),
+	preload("res://assets/sprites/nuggetcat_walk2.png"),
+	preload("res://assets/sprites/nuggetcat_jump.png"),
 ]
 
 var fireball_scene = preload("res://scenes/fireball.tscn")
@@ -301,15 +315,17 @@ func jump():
 
 
 func shoot_a_fireball():
-	# Only two fireballs in the air at a time. Otherwise you could
-	# hold the button down and clear the whole level from the start.
-	if get_tree().get_nodes_in_group("fireballs").size() >= MOST_FIREBALLS_AT_ONCE:
+	# Only so many in the air at a time. Otherwise you could hold the
+	# button down and clear the whole level from the start.
+	var most = MOST_NUGGETS_AT_ONCE if wearing_nugget_suit else MOST_FIREBALLS_AT_ONCE
+	if get_tree().get_nodes_in_group("fireballs").size() >= most:
 		return
 
 	var ball = fireball_scene.instantiate()
 	ball.position = position + Vector2(11 * facing, -1)
 	ball.direction = facing
 	ball.is_axe = has_axe
+	ball.is_nugget = wearing_nugget_suit and not has_axe
 	get_parent().add_child.call_deferred(ball)
 	$FireballSound.play()
 
@@ -340,8 +356,13 @@ func run(delta):
 func choose_picture(delta):
 	$Body.flip_h = facing < 0
 
-	# Red cat in overalls if you have fire powers, orange cat if not.
-	var pictures = fire_pictures if has_fire else normal_pictures
+	# Chicken nugget suit beats everything. Then red cat in overalls
+	# if you have fire powers, and plain orange cat if not.
+	var pictures = normal_pictures
+	if wearing_nugget_suit:
+		pictures = nugget_pictures
+	elif has_fire:
+		pictures = fire_pictures
 
 	if not is_on_floor():
 		$Body.texture = pictures[3]
@@ -465,6 +486,19 @@ func grab_the_axe():
 	shout.emit("GOT THE AXE!\nTAP SPACE TWICE!")
 
 
+# A chicken nugget calls this. You climb into the suit, and from
+# then on a double tap of the space bar throws chicken nuggets —
+# no coffee needed.
+func wear_the_nugget_suit():
+	wearing_nugget_suit = true
+	has_fire = true
+	$PowerUpSound.play()
+	say("CHICKEN NUGGET SUIT!\nTAP SPACE TWICE!")
+
+	# A shower of golden crumbs as you climb in.
+	make_a_puff(Color(0.95, 0.75, 0.35), 12, 30.0, 0.0)
+
+
 # The cup of coffee calls this. Fire powers!
 func drink_the_coffee():
 	has_fire = true
@@ -585,6 +619,16 @@ func ouch(sent_home := false):
 
 	# Just been hit? Nothing can touch you for a moment.
 	if clock < safe_until:
+		return
+
+	# The suit takes the hit for you. You lose the suit, not a heart.
+	if wearing_nugget_suit and not has_axe:
+		wearing_nugget_suit = false
+		has_fire = false
+		safe_until = clock + SAFE_TIME_AFTER_A_HIT
+		$HurtSound.play()
+		say("LOST THE SUIT!")
+		make_a_puff(Color(0.95, 0.75, 0.35), 10, 26.0, 0.0)
 		return
 
 	# With fire powers you only LOSE the powers — no heart lost.

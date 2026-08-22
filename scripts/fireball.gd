@@ -16,7 +16,11 @@ var direction := 1
 # The cat sets this too, just before it lets go.
 var is_axe := false
 
+# ...and in the chicken nugget suit you throw chicken nuggets.
+var is_nugget := false
+
 var axe_picture = preload("res://assets/sprites/axe.png")
+var nugget_picture = preload("res://assets/sprites/nugget.png")
 
 var age := 0.0
 
@@ -29,6 +33,8 @@ func _ready():
 
 	if is_axe:
 		$Sprite.texture = axe_picture
+	elif is_nugget:
+		$Sprite.texture = nugget_picture
 
 
 func _physics_process(delta):

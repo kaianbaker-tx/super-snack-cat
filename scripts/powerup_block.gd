@@ -10,6 +10,7 @@ extends StaticBody2D
 #       red    →  a heart, to get a lost one back
 #       green  →  a chip — run much faster for ten seconds
 #       blue   →  a diamond — nothing can hurt you for a bit
+#       orange →  a chicken nugget — the suit, and nuggets to throw
 #
 #    They're all the same picture underneath, just painted a
 #    different colour, so a new colour is one line of code.
@@ -42,6 +43,7 @@ var heart_scene = preload("res://scenes/heart.tscn")
 var coffee_scene = preload("res://scenes/coffee.tscn")
 var diamond_scene = preload("res://scenes/diamond.tscn")
 var chip_scene = preload("res://scenes/chip.tscn")
+var nugget_scene = preload("res://scenes/nugget.tscn")
 
 
 func _ready():
@@ -122,6 +124,8 @@ func let_something_out():
 		thing = diamond_scene.instantiate()
 	elif gives == "chip":
 		thing = chip_scene.instantiate()
+	elif gives == "nugget":
+		thing = nugget_scene.instantiate()
 	else:
 		return
 

@@ -19,7 +19,7 @@ godot --path "$HOME/Super Snack Cat"
 | Space | Jump. Hold it longer to jump higher. |
 | Space (in water) | One swimming stroke. Tap it over and over to swim up. |
 | ↑ ↓ | Climb a ladder |
-| Space Space (quick) | Shoot a fireball — only after you drink the coffee |
+| Space Space (quick) | Throw a fireball (after coffee) or a chicken nugget (in the suit) |
 | R | Start the level over |
 | F | Full screen on and off (Esc also gets you out) |
 | P | Options — music and sound volume sliders |
@@ -45,11 +45,17 @@ colour:
 | **Red** | A heart — one of your lost ones back |
 | **Green** | A **chip** |
 | **Blue** | A **diamond** |
+| **Orange** | A **chicken nugget** |
 
 The chip makes you **run much faster for 10 seconds** — 215 instead of 135.
 The cat glows warm and leaves an orange trail, and flickers for the last
 second and a half as a warning. You keep the same jump, so at that speed
 ledges arrive a lot sooner than you expect.
+
+The chicken nugget puts you in a **chicken nugget suit**. Tap SPACE TWICE
+and you throw chicken nuggets — no coffee needed, and you can have four in
+the air at once instead of two. The suit also takes one hit for you before
+it comes off, so it's armour as well as a weapon.
 
 The diamond makes you **untouchable for 8 seconds**. You flash through the
 rainbow, nothing can hurt you, and anything you run into gets flattened —

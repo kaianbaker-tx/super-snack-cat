@@ -19,6 +19,11 @@ Assets used in this game, and where they came from.
   - the fire cat — `firecat_idle.png`, `firecat_walk1.png`,
     `firecat_walk2.png`, `firecat_jump.png`
   - `coffee.png` (the paw-print coffee cup), `fireball.png`, `sandwich.png`
+  - the chicken nugget suit — `nuggetcat_idle.png`, `nuggetcat_walk1.png`,
+    `nuggetcat_walk2.png`, `nuggetcat_jump.png` — made by taking the cat
+    pictures, swapping the orange fur for breading gold, speckling it, and
+    wrapping a golden shell round the outside
+  - `nugget.png`, the chicken nugget you throw
   - the dog boss — `dog_idle.png`, `dog_walk1.png`, `dog_walk2.png`,
     `dog_beaten.png`, plus `axe.png` and `doghouse.png`
 

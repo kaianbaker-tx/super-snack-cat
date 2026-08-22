@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/nugget.gd" id="1_nug"]
+[ext_resource type="Texture2D" path="res://assets/sprites/nugget.png" id="2_nug"]
+
+[sub_resource type="RectangleShape2D" id="Shape_nug"]
+size = Vector2(16, 14)
+
+[node name="Nugget" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_nug")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_nug")
+scale = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape_nug")

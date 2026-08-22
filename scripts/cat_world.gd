@@ -32,6 +32,10 @@ extends Node2D
 #      U  BLUE block   →  a diamond — nothing can hurt you for
 #                          a few seconds, and you flatten anything
 #                          you touch, even a spiky ball
+#      Y  ORANGE block →  a CHICKEN NUGGET. You put on a chicken
+#                          nugget suit, and tapping SPACE TWICE
+#                          throws chicken nuggets. The suit takes
+#                          one hit for you before it comes off.
 #
 #   Rows have to stay in order, but they can be any length.
 #   Try digging a pit, or building a tower of B's.
@@ -47,7 +51,7 @@ const LEVEL_ONE = [
 	"................................................=CCCCC.........................k................................",
 	"...............................................G=BB?BB..........CCC............GG...............................",
 	".................BRB..........................GD=........=......GGG..BNB......GDDG..............................",
-	"............R...CCC.........CCC....U..N......GDD=.....BBB=.....UDDD..........GDDDDG.....C.C.C.C....?............",
+	"............R...CCC.........CCC....U..N......GDD=.....BBB=.....UDDD.Y........GDDDDG.....C.C.C.C....?............",
 	"............................................GDDD=........=..................GDDDDDDG...........B.........W......",
 	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
 	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -64,7 +68,7 @@ const LEVEL_TWO = [
 	".............................................................BB.........................GGG=BBBB..............",
 	"......................................CCMC.........................................CCC..DDD=..................",
 	"......................BNB...........GGGGGGG...............BB.......................GGG.....=..................",
-	"..........CCC.R....................GDDDDDDDG..N....?..............BUB.........CCC..DDD.....=..................",
+	"..........CCC.R....................GDDDDDDDG..N....?........Y.....BUB.........CCC..DDD.....=..................",
 	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
 	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
 	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -82,7 +86,7 @@ const LEVEL_THREE = [
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 	"B...................E.........E..............B",
 	"B...........CCC.......k........CCC...........B",
-	"B.......N...BBB...R..BBBB...U..BBB..?........B",
+	"B.......N...BBBY..R..BBBB...U..BBB..?........B",
 	"B......................................B..A..B",
 	"B..S..P..B...^^....O....X.............BL.BBB.B",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -158,6 +162,7 @@ const BLOCK_COLOURS = {
 	"R": ["heart",   Color(1.00, 0.36, 0.36)],   # red
 	"N": ["chip",    Color(0.36, 0.90, 0.42)],   # green
 	"U": ["diamond", Color(0.40, 0.66, 1.00)],   # blue
+	"Y": ["nugget",  Color(1.00, 0.46, 0.10)],   # orange  (Y for Yummy)
 }
 
 # ---- The music ----
