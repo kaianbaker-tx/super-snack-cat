@@ -41,21 +41,30 @@ colour:
 
 | Block | What comes out |
 |---|---|
-| **Gold** | A cup of coffee, for fire powers |
+| **Gold** | A **chicken nugget** — every gold block has one |
 | **Red** | A heart — one of your lost ones back |
 | **Green** | A **chip** |
 | **Blue** | A **diamond** |
-| **Orange** | A **chicken nugget** |
+| **Brown** | A cup of coffee, for fire powers |
 
 The chip makes you **run much faster for 10 seconds** — 215 instead of 135.
 The cat glows warm and leaves an orange trail, and flickers for the last
 second and a half as a warning. You keep the same jump, so at that speed
 ledges arrive a lot sooner than you expect.
 
+The gold blocks are the common ones, and every single one of them holds a
+chicken nugget. There are four in level 1 — the first is right at the start.
+
 The chicken nugget puts you in a **chicken nugget suit**. Tap SPACE TWICE
 and you throw chicken nuggets — no coffee needed, and you can have four in
 the air at once instead of two. The suit also takes one hit for you before
 it comes off, so it's armour as well as a weapon.
+
+A thrown nugget squashes mushrooms and knocks bats out of the sky. Spiky
+balls still shrug them off — those only go down to a diamond.
+
+Want *every* block to drop nuggets? Change every line in `BLOCK_COLOURS`
+at the top of `scripts/cat_world.gd` to say `"nugget"`.
 
 The diamond makes you **untouchable for 8 seconds**. You flash through the
 rainbow, nothing can hurt you, and anything you run into gets flattened —
