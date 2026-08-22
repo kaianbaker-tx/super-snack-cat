@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/chip.gd" id="1_chip"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pixel_food.png" id="2_food"]
+
+[sub_resource type="RectangleShape2D" id="Shape_chip"]
+size = Vector2(15, 13)
+
+[node name="Chip" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_chip")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_food")
+region_enabled = true
+region_rect = Rect2(162, 108, 18, 18)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("Shape_chip")

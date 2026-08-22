@@ -26,9 +26,9 @@ extends Node2D
 #   And the power-up blocks. Bonk them from underneath with your
 #   head and something comes out. The colour says what:
 #
-#      ?  gold block   →  a coin
+#      ?  gold block   →  a cup of coffee, for fire powers
 #      R  RED block    →  a heart, to get a lost one back
-#      N  GREEN block  →  a cup of coffee, for fire powers
+#      N  GREEN block  →  a CHIP — run much faster for ten seconds
 #      U  BLUE block   →  a diamond — nothing can hurt you for
 #                          a few seconds, and you flatten anything
 #                          you touch, even a spiky ball
@@ -47,7 +47,7 @@ const LEVEL_ONE = [
 	"................................................=CCCCC.........................k................................",
 	"...............................................G=BB?BB..........CCC............GG...............................",
 	".................BRB..........................GD=........=......GGG..BNB......GDDG..............................",
-	"............R...CCC.........CCC....U.........GDD=.....BBB=.....UDDD..........GDDDDG.....C.C.C.C....?............",
+	"............R...CCC.........CCC....U..N......GDD=.....BBB=.....UDDD..........GDDDDG.....C.C.C.C....?............",
 	"............................................GDDD=........=..................GDDDDDDG...........B.........W......",
 	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
 	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -64,7 +64,7 @@ const LEVEL_TWO = [
 	".............................................................BB.........................GGG=BBBB..............",
 	"......................................CCMC.........................................CCC..DDD=..................",
 	"......................BNB...........GGGGGGG...............BB.......................GGG.....=..................",
-	"..........CCC.R....................GDDDDDDDG.......?..............BUB.........CCC..DDD.....=..................",
+	"..........CCC.R....................GDDDDDDDG..N....?..............BUB.........CCC..DDD.....=..................",
 	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
 	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
 	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -82,7 +82,7 @@ const LEVEL_THREE = [
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 	"B...................E.........E..............B",
 	"B...........CCC.......k........CCC...........B",
-	"B...........BBB...R..BBBB...U..BBB..?........B",
+	"B.......N...BBB...R..BBBB...U..BBB..?........B",
 	"B......................................B..A..B",
 	"B..S..P..B...^^....O....X.............BL.BBB.B",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -154,10 +154,10 @@ const SCOREBOARD_PICTURE_SIZE = 36
 #
 #            letter : [ what comes out,  what colour to paint it ]
 const BLOCK_COLOURS = {
-	"?": ["coin",    Color(1.00, 1.00, 1.00)],   # gold — left as it is
-	"R": ["heart",   Color(1.00, 0.42, 0.42)],   # red
-	"N": ["coffee",  Color(0.45, 1.00, 0.55)],   # green
-	"U": ["diamond", Color(0.45, 0.72, 1.00)],   # blue
+	"?": ["coffee",  Color(1.00, 0.80, 0.25)],   # gold
+	"R": ["heart",   Color(1.00, 0.36, 0.36)],   # red
+	"N": ["chip",    Color(0.36, 0.90, 0.42)],   # green
+	"U": ["diamond", Color(0.40, 0.66, 1.00)],   # blue
 }
 
 # ---- The music ----

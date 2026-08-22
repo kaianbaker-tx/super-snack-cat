@@ -41,10 +41,15 @@ colour:
 
 | Block | What comes out |
 |---|---|
-| **Gold** | A coin, straight into your pocket |
+| **Gold** | A cup of coffee, for fire powers |
 | **Red** | A heart — one of your lost ones back |
-| **Green** | A cup of coffee, for fire powers |
+| **Green** | A **chip** |
 | **Blue** | A **diamond** |
+
+The chip makes you **run much faster for 10 seconds** — 215 instead of 135.
+The cat glows warm and leaves an orange trail, and flickers for the last
+second and a half as a warning. You keep the same jump, so at that speed
+ledges arrive a lot sooner than you expect.
 
 The diamond makes you **untouchable for 8 seconds**. You flash through the
 rainbow, nothing can hurt you, and anything you run into gets flattened —

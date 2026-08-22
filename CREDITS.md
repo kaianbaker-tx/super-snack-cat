@@ -12,6 +12,8 @@ Assets used in this game, and where they came from.
     level.
   - `assets/sprites/pixel_characters.png` — "Pixel Platformer" pack, the
     characters tilemap. The bat and the spiky ball.
+  - `assets/sprites/pixel_food.png` — "Pixel Platformer Food Expansion"
+    pack. The chip.
 - Drawn pixel by pixel for this game, not from any pack:
   - the cat — `cat_idle.png`, `cat_walk1.png`, `cat_walk2.png`, `cat_jump.png`
   - the fire cat — `firecat_idle.png`, `firecat_walk1.png`,

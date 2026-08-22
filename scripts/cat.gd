@@ -59,6 +59,20 @@ const MOST_HEARTS = 5
 # How long a diamond keeps you safe, in seconds.
 const DIAMOND_TIME = 8.0
 
+# ---- The chip (out of a GREEN block) ----
+
+# How long the chip lasts, in seconds.
+const CHIP_TIME = 10.0
+
+# How fast you run while you've got it. Normal SPEED is 135, so this
+# is about half again as fast. Push it too high and you'll go
+# skidding straight off every ledge - try it and see.
+const SPEEDY_SPEED = 215.0
+
+# You also get up to that speed quicker, or the boost would be over
+# before you'd finished building up to it.
+const SPEEDY_SPEEDING_UP = 1400.0
+
 # How hard a baddie knocks you backwards when it gets you.
 const KNOCKED_BACK = 130.0
 const KNOCKED_UP = -180.0
@@ -106,6 +120,10 @@ var ignore_ladders_until := -99.0
 
 # While the clock is below this, a diamond is protecting you.
 var diamond_until := -99.0
+
+# ...and below this one, a chip is making you fast.
+var chip_until := -99.0
+var trail_timer := 0.0
 var facing := 1                  # 1 = looking right, -1 = looking left
 var start_position := Vector2.ZERO
 var time_since_on_floor := 0.0
@@ -300,15 +318,21 @@ func run(delta):
 	# Left arrow gives -1, right arrow gives 1, nothing gives 0.
 	var direction = Input.get_axis("ui_left", "ui_right")
 
-	# Water is thick. You can't sprint through it.
-	var top_speed = SWIMMING_SPEED if is_swimming() else SPEED
+	# Water is thick. You can't sprint through it, chip or no chip.
+	var top_speed = SPEED
+	var pick_up_speed = SPEEDING_UP
+	if is_swimming():
+		top_speed = SWIMMING_SPEED
+	elif is_speedy():
+		top_speed = SPEEDY_SPEED
+		pick_up_speed = SPEEDY_SPEEDING_UP
 
 	if direction == 0:
 		# Nothing held: slide to a stop.
 		velocity.x = move_toward(velocity.x, 0.0, SLOWING_DOWN * delta)
 	else:
 		# Build up to full speed instead of snapping to it.
-		velocity.x = move_toward(velocity.x, direction * top_speed, SPEEDING_UP * delta)
+		velocity.x = move_toward(velocity.x, direction * top_speed, pick_up_speed * delta)
 		facing = 1 if direction > 0 else -1
 
 
@@ -349,8 +373,18 @@ func choose_picture(delta):
 			$Body.modulate = Color.from_hsv(fmod(clock * 1.6, 1.0), 0.65, 1.0)
 		return
 
+	# A chip warms the cat up orange, and flickers for the last second
+	# and a half as a warning it's about to wear off.
+	if is_speedy():
+		var nearly_gone = chip_until - clock < 1.5
+		if nearly_gone and fmod(clock, 0.18) < 0.09:
+			$Body.modulate = Color.WHITE
+		else:
+			$Body.modulate = Color(1.0, 0.90, 0.72)
+	else:
+		$Body.modulate = Color.WHITE
+
 	# Flash on and off while you're briefly safe after being hit.
-	$Body.modulate = Color.WHITE
 	if clock < safe_until:
 		$Body.modulate.a = 0.35 if fmod(clock, 0.16) < 0.08 else 1.0
 
@@ -377,6 +411,12 @@ func land_with_a_thump(delta, how_fast_you_were_falling):
 		# Squash. choose_picture springs it back out again.
 		$Body.scale = Vector2(1.35, 0.68)
 		make_a_puff(Color(0.85, 0.78, 0.62), 7, 24.0)
+
+	# Full of chips and really shifting? Leave a trail behind you.
+	trail_timer -= delta
+	if is_speedy() and absf(velocity.x) > 120.0 and trail_timer <= 0.0:
+		trail_timer = 0.05
+		make_a_puff(Color(1.0, 0.72, 0.3), 2, 9.0, 2.0)
 
 	# Skidding: on the floor, running one way, pressing the other.
 	skid_timer -= delta
@@ -495,6 +535,17 @@ func go_invincible():
 # The baddies ask this before they decide what to do about you.
 func is_invincible():
 	return clock < diamond_until
+
+
+# A chip out of a green block calls this.
+func eat_the_chip():
+	chip_until = clock + CHIP_TIME
+	$PowerUpSound.play()
+	say("SPEEDY CAT!")
+
+
+func is_speedy():
+	return clock < chip_until
 
 
 # ---- Keys ----

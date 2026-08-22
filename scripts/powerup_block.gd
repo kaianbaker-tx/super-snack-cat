@@ -6,9 +6,9 @@ extends StaticBody2D
 #    Jump up and BONK it with your head and something comes out.
 #    What comes out depends on the colour:
 #
-#       gold   →  a coin
+#       gold   →  a cup of coffee — fire powers!
 #       red    →  a heart, to get a lost one back
-#       green  →  a cup of coffee — fire powers!
+#       green  →  a chip — run much faster for ten seconds
 #       blue   →  a diamond — nothing can hurt you for a bit
 #
 #    They're all the same picture underneath, just painted a
@@ -34,14 +34,41 @@ var colour := Color.WHITE
 
 var used := false
 
+# The grey block pictures, made once when the block wakes up.
+var fresh_grey = null
+var used_grey = null
+
 var heart_scene = preload("res://scenes/heart.tscn")
 var coffee_scene = preload("res://scenes/coffee.tscn")
 var diamond_scene = preload("res://scenes/diamond.tscn")
+var chip_scene = preload("res://scenes/chip.tscn")
 
 
 func _ready():
+	# Painting a colour on works by MULTIPLYING it into the picture,
+	# and the block picture is gold — which has almost no blue in it.
+	# Multiply gold by blue and you get mud. So we take the colour out
+	# of the picture first, leaving a plain grey block, and then any
+	# colour we paint on comes out true.
+	fresh_grey = grey_copy_of(FRESH_PICTURE)
+	used_grey = grey_copy_of(USED_PICTURE)
+
+	$Sprite.region_enabled = false
+	$Sprite.texture = fresh_grey
 	$Sprite.modulate = colour
 	$Underneath.body_entered.connect(_something_bonked_me)
+
+
+# Cuts one block out of the tile sheet and drains the colour out of
+# it, keeping the light bits light and the dark outline dark.
+func grey_copy_of(picture_area):
+	var block = $Sprite.texture.get_image().get_region(picture_area)
+	for y in block.get_height():
+		for x in block.get_width():
+			var was = block.get_pixel(x, y)
+			var how_light = maxf(was.r, maxf(was.g, was.b))
+			block.set_pixel(x, y, Color(how_light, how_light, how_light, was.a))
+	return ImageTexture.create_from_image(block)
 
 
 func _something_bonked_me(who):
@@ -70,7 +97,7 @@ func pop_open(cat):
 	bonk.tween_property(self, "position:y", position.y, BONK_TIME * 1.4)
 
 	# Go flat and dim, so you can see at a glance it's been used.
-	$Sprite.region_rect = USED_PICTURE
+	$Sprite.texture = used_grey
 	$Sprite.modulate = colour.darkened(0.45)
 
 	if gives == "coin":
@@ -93,6 +120,8 @@ func let_something_out():
 		thing = coffee_scene.instantiate()
 	elif gives == "diamond":
 		thing = diamond_scene.instantiate()
+	elif gives == "chip":
+		thing = chip_scene.instantiate()
 	else:
 		return
 
@@ -118,7 +147,7 @@ func let_something_out():
 # A coin picture that flies up out of the block and fades away.
 func fling_a_coin_up():
 	var sparkle = Sprite2D.new()
-	sparkle.texture = $Sprite.texture
+	sparkle.texture = preload("res://assets/sprites/pixel_tiles.png")
 	sparkle.region_enabled = true
 	sparkle.region_rect = Rect2(198, 126, 18, 18)     # the coin picture
 	sparkle.position = position
