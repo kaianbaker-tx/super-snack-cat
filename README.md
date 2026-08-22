@@ -21,6 +21,7 @@ godot --path "$HOME/Super Snack Cat"
 | ↑ ↓ | Climb a ladder |
 | Space Space (quick) | Shoot a fireball — only after you drink the coffee |
 | R | Start the level over |
+| F | Fill the whole screen (F again to come back) |
 
 ## Hearts
 
@@ -39,7 +40,13 @@ You start every level with **three hearts**, shown under the score.
 | 2 | Longer, more baddies | Unlock the gate, eat the sandwich |
 | 3 | Inside the dog house | Unlock the gate, grab the axe, beat the dog |
 
-Each level hides **one key**. No key, no gate, no finish.
+Each level hides **one key**. The gate opens when you walk into it carrying
+one — but the gate is only two blocks tall, so if you can't find the key you
+can always just jump it. Nothing in this game can trap you.
+
+If you ever want the gates to be real barriers again, make them taller: add
+more `B`s in the column above the `L` in `scripts/cat_world.gd`. Four or more
+is higher than the cat can jump.
 
 ## Where everything is
 

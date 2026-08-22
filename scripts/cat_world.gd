@@ -35,11 +35,11 @@ const LEVEL_ONE = [
 	"......................................................................E.........................................",
 	".................................E.............................................CC.......E.......................",
 	".................................................CCCCC.........................k................................",
-	"...............................................G.BB?BB..........CCC............GG..............B................",
-	".................B?B..........................GD.........=......GGG..B?B......GDDG.............B................",
-	"................CCC.........CCC....?.........GDD.........=......DDD..........GDDDDG.....C.C.C.CB................",
-	"............................................GDDD.........=BB.BB.............GDDDDDDG...........B.........W......",
-	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD..M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
+	"...............................................G=BB?BB..........CCC............GG...............................",
+	".................B?B..........................GD=........=......GGG..B?B......GDDG..............................",
+	"................CCC.........CCC....?.........GDD=........=......DDD..........GDDDDG.....C.C.C.C.................",
+	"............................................GDDD=........=BB.BB.............GDDDDDDG...........B.........W......",
+	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
 	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
 	"DDDDDDDDDDDDDDDDDDDDDDDD~~~DDDDDDDDDDDDD...DDDDDDDDDDDDDDD~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 ]
@@ -52,9 +52,9 @@ const LEVEL_TWO = [
 	".........................E.....................................................................E..............",
 	".......................................................E.....CC.........................CCC..k................",
 	".............................................................BB.........................GGG=BBBB..............",
-	"......................................CCMC.........................................CCC..DDD=........B.........",
-	"......................B?B...........GGGGGGG...............BB.......................GGG.....=........B.........",
-	"..........CCC......................GDDDDDDDG......................B?B.........CCC..DDD.....=........B.........",
+	"......................................CCMC.........................................CCC..DDD=..................",
+	"......................B?B...........GGGGGGG...............BB.......................GGG.....=..................",
+	"..........CCC......................GDDDDDDDG......................B?B.........CCC..DDD.....=..................",
 	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
 	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
 	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -70,9 +70,9 @@ const LEVEL_THREE = [
 	"..............................................",
 	"..............................................",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-	"B...................E.........E........B.....B",
-	"B...........CCC.......k........CCC.....B.....B",
-	"B...........BBB......BBBB......BBB.....B.....B",
+	"B...................E.........E..............B",
+	"B...........CCC.......k........CCC...........B",
+	"B...........BBB......BBBB......BBB...........B",
 	"B......................................B..A..B",
 	"B..S..P..B...^^....O....X.............BL.BBB.B",
 	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -195,6 +195,23 @@ func _ready():
 	show_coins(0)
 	show_hearts($Cat.hearts)
 	show_keys(0)
+
+
+# ---- The window ----
+
+# Press F to fill the whole screen, and F again to come back.
+# The game always draws the same amount of level either way — going
+# full screen just makes everything bigger.
+func _unhandled_input(event):
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	if event.keycode != KEY_F:
+		return
+
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 # ---- Reading the level ----

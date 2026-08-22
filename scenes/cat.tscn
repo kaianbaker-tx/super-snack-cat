@@ -28,7 +28,7 @@ texture = ExtResource("2_idle")
 shape = SubResource("Shape_cat")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(4, 4)
+zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
