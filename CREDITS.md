@@ -6,7 +6,11 @@ Assets used in this game, and where they came from.
 
 - Kenney Game Assets All-in-1 — <https://kenney.nl> — CC0 (no credit required)
   - `assets/sprites/pixel_tiles.png` — "Pixel Platformer" pack. The ground,
-    boxes, coins, trees, flag and mushroom.
+    boxes, coins, trees, flag and mushroom. Also everything the bigger game
+    uses from the same sheet: the gold lucky block (and the brown block it
+    turns into), sand and snow ground, the blue pipes, the red mushroom tops
+    and their stalks, wooden planks and snowy cloud ledges, the cactus,
+    snowman, bones, arrow sign and fence.
   - `assets/sprites/pixel_backgrounds.png` — "Pixel Platformer" pack, the
     backgrounds tilemap. The faraway hills, clouds and trees behind each
     level.

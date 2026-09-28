@@ -6,14 +6,16 @@ extends StaticBody2D
 #    Jump up and BONK it with your head and something comes out.
 #    What comes out depends on the colour:
 #
-#       gold   →  a cup of coffee — fire powers!
+#       gold   →  a LUCKY BLOCK — a surprise! (see below)
+#       orange →  a chicken nugget — the suit, and nuggets to throw
 #       red    →  a heart, to get a lost one back
 #       green  →  a chip — run much faster for ten seconds
 #       blue   →  a diamond — nothing can hurt you for a bit
-#       orange →  a chicken nugget — the suit, and nuggets to throw
+#       brown  →  a cup of coffee — fire powers!
 #
-#    They're all the same picture underneath, just painted a
-#    different colour, so a new colour is one line of code.
+#    The coloured ones are all the same picture underneath, just
+#    painted a different colour, so a new colour is one line of
+#    code. The lucky block is Kenney's real gold block, shining.
 # ============================================================
 
 # The two pictures in the tile sheet: a fresh block with a ! on it,
@@ -27,6 +29,32 @@ const BONK_TIME = 0.09
 
 # How far above the block whatever comes out ends up sitting.
 const POPS_UP_TO = 18.0
+
+# ---- The lucky block ----
+
+# Kenney's gold block with a ! on it, and the plain brown block it
+# turns into once you've had what's inside.
+const LUCKY_PICTURE = Rect2(180, 0, 18, 18)
+const LUCKY_USED_PICTURE = Rect2(162, 18, 18, 18)
+
+# What can come out of a lucky block. The bigger the number, the
+# more often it comes out. Make "coffee" 100 and it's nearly always
+# coffee. Make "mushroom" 0 and there's never any bad luck.
+const LUCKY_SURPRISES = {
+	"coins": 30,       # a shower of five coins
+	"nugget": 15,      # the chicken nugget suit
+	"coffee": 15,      # fire powers
+	"chip": 12,        # super speed
+	"heart": 12,       # a heart back
+	"diamond": 8,      # untouchable
+	"mushroom": 8,     # BAD LUCK — a mushroom baddie jumps out!
+}
+
+# How many coins come out in a shower.
+const COINS_IN_A_SHOWER = 5
+
+# How fast the lucky block shines.
+const SHINE_SPEED = 4.0
 
 
 # The level fills these two in when it builds the block.
@@ -44,9 +72,21 @@ var coffee_scene = preload("res://scenes/coffee.tscn")
 var diamond_scene = preload("res://scenes/diamond.tscn")
 var chip_scene = preload("res://scenes/chip.tscn")
 var nugget_scene = preload("res://scenes/nugget.tscn")
+var mushroom_scene = preload("res://scenes/mushroom.tscn")
+
+# Counts up, to make the lucky block shine.
+var clock := 0.0
 
 
 func _ready():
+	$Underneath.body_entered.connect(_something_bonked_me)
+
+	# The lucky block keeps Kenney's own colours. No painting.
+	if gives == "lucky":
+		$Sprite.region_rect = LUCKY_PICTURE
+		return
+	set_process(false)
+
 	# Painting a colour on works by MULTIPLYING it into the picture,
 	# and the block picture is gold — which has almost no blue in it.
 	# Multiply gold by blue and you get mud. So we take the colour out
@@ -58,7 +98,16 @@ func _ready():
 	$Sprite.region_enabled = false
 	$Sprite.texture = fresh_grey
 	$Sprite.modulate = colour
-	$Underneath.body_entered.connect(_something_bonked_me)
+
+
+# The lucky block glows brighter and dimmer, over and over, so you
+# can spot it from far away — like the ? blocks in Mario.
+func _process(delta):
+	if used:
+		return
+	clock += delta * SHINE_SPEED
+	var glow = (sin(clock) + 1.0) / 2.0
+	$Sprite.modulate = Color(1, 1, 1).lerp(Color(1.35, 1.3, 1.05), glow)
 
 
 # Cuts one block out of the tile sheet and drains the colour out of
@@ -83,7 +132,10 @@ func _something_bonked_me(who):
 		return
 
 	# You have to be moving UP. Walking into the side doesn't count.
-	if who.velocity.y >= 0:
+	# Bumping your head stops you dead, so by the time the block
+	# hears about it you might not be moving any more — a head that
+	# has just hit the ceiling counts too.
+	if who.velocity.y >= 0 and not who.is_on_ceiling():
 		return
 
 	pop_open(who)
@@ -99,32 +151,81 @@ func pop_open(cat):
 	bonk.tween_property(self, "position:y", position.y, BONK_TIME * 1.4)
 
 	# Go flat and dim, so you can see at a glance it's been used.
-	$Sprite.texture = used_grey
-	$Sprite.modulate = colour.darkened(0.45)
+	var what = gives
+	if gives == "lucky":
+		$Sprite.region_rect = LUCKY_USED_PICTURE
+		$Sprite.modulate = Color(1, 1, 1)
+		what = pick_a_surprise()
+	else:
+		$Sprite.texture = used_grey
+		$Sprite.modulate = colour.darkened(0.45)
 
-	if gives == "coin":
+	if what == "coin":
 		# A coin goes straight into your pocket, like it does in Mario.
 		# The little picture flying up is just for show.
 		cat.collect_coin()
 		fling_a_coin_up()
 		return
 
-	let_something_out()
+	if what == "coins":
+		shower_of_coins(cat)
+		return
+
+	if what == "mushroom":
+		cat.say("BAD LUCK!")
+		let_a_baddie_out()
+		return
+
+	let_something_out(what)
+
+
+# Spins the lucky wheel. Every surprise gets as many tickets as its
+# number in LUCKY_SURPRISES, then we pull one ticket out of the hat.
+func pick_a_surprise():
+	var all_the_tickets = 0
+	for surprise in LUCKY_SURPRISES:
+		all_the_tickets += LUCKY_SURPRISES[surprise]
+
+	var ticket = randi_range(1, maxi(all_the_tickets, 1))
+	for surprise in LUCKY_SURPRISES:
+		ticket -= LUCKY_SURPRISES[surprise]
+		if ticket <= 0:
+			return surprise
+	return "coin"
+
+
+# Five coins, one after another, straight into your pocket.
+func shower_of_coins(cat):
+	for i in COINS_IN_A_SHOWER:
+		# Pressed R halfway through? Then stop quietly.
+		if not is_inside_tree() or not is_instance_valid(cat):
+			return
+		cat.collect_coin()
+		fling_a_coin_up()
+		await get_tree().create_timer(0.12).timeout
+
+
+# Bad luck! A mushroom baddie hops out of the top and walks off.
+func let_a_baddie_out():
+	var baddie = mushroom_scene.instantiate()
+	baddie.position = position - Vector2(0, POPS_UP_TO)
+	get_parent().add_child.call_deferred(baddie)
+	$PopSound.play()
 
 
 # Makes the thing this block was holding, and floats it up out of
 # the top of the block.
-func let_something_out():
+func let_something_out(what):
 	var thing = null
-	if gives == "heart":
+	if what == "heart":
 		thing = heart_scene.instantiate()
-	elif gives == "coffee":
+	elif what == "coffee":
 		thing = coffee_scene.instantiate()
-	elif gives == "diamond":
+	elif what == "diamond":
 		thing = diamond_scene.instantiate()
-	elif gives == "chip":
+	elif what == "chip":
 		thing = chip_scene.instantiate()
-	elif gives == "nugget":
+	elif what == "nugget":
 		thing = nugget_scene.instantiate()
 	else:
 		return

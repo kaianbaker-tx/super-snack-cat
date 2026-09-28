@@ -21,7 +21,6 @@ script = ExtResource("3_bg")
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 bus = &"Music"
-bus = &"Sound"
 
 [node name="Water" type="Node2D" parent="."]
 modulate = Color(1, 1, 1, 0.62)

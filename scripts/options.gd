@@ -9,6 +9,9 @@ extends CanvasLayer
 #    Every sound in the game goes down one of two pipes:
 #    the MUSIC pipe or the SOUND pipe. Each slider turns the
 #    volume of one pipe up and down.
+#
+#    The game remembers which level you got to. Press N while
+#    this box is open to go all the way back to World 1-1.
 # ============================================================
 
 # Where your settings get remembered, so the game starts the way
@@ -42,6 +45,13 @@ func _unhandled_input(event):
 	elif event.keycode == KEY_ESCAPE and visible:
 		open_or_close()
 		get_viewport().set_input_as_handled()
+	elif event.keycode == KEY_N and visible:
+		# Back to the very first level. Only works while the box is
+		# open, so you can't do it by accident while playing.
+		var world = get_tree().current_scene
+		if world.has_method("start_again_from_world_one"):
+			get_viewport().set_input_as_handled()
+			world.start_again_from_world_one()
 
 
 func open_or_close():

@@ -97,5 +97,5 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
 theme_override_font_sizes/font_size = 20
-text = "P closes this   ·   arrow keys move the sliders"
+text = "P closes this   ·   arrow keys move the sliders\nN goes back to World 1-1"
 horizontal_alignment = 1

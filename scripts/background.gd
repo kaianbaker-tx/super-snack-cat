@@ -32,25 +32,20 @@ const UNDER_ROW = 2
 #      4, 5         orange desert with sand dunes and a cactus
 #      6, 7         green forest
 #
-# Below, each level gets a list of columns. The list repeats all
-# the way along the level, so [6, 7] means forest-trees-forest-trees.
-# An EMPTY list means no background at all — level 3 is indoors,
-# so there is no sky to see.
-const LEVEL_LOOKS = [
-	[0, 1, 0, 3, 2],   # Level 1 — blue sky, clouds and faraway trees
-	[6, 7, 6, 6, 7],   # Level 2 — green forest
-	[],                # Level 3 — inside the dog house
-]
+# Each look in cat_world.gd has a "hills" list of these columns.
+# The list repeats all the way along the level, so [6, 7] means
+# forest-trees-forest-trees. An EMPTY list means no background at
+# all — caves and the dog house are indoors, so there is no sky.
 
 var background_picture = preload("res://assets/sprites/pixel_backgrounds.png")
 
 
 # The level calls this once, as soon as it has worked out how big
-# it is. `ground_line` is how far down the grass starts.
-func build(level_number, level_width, level_height, ground_line):
+# it is. `look` is the list of columns to use, and `ground_line` is
+# how far down the grass starts.
+func build(look, level_width, level_height, ground_line):
 	scroll_scale = Vector2(HOW_SLOW, 1.0)
 
-	var look = LEVEL_LOOKS[level_number]
 	if look.is_empty():
 		return
 

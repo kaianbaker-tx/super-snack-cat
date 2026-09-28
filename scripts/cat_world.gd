@@ -1,122 +1,38 @@
 extends Node2D
 
 # ============================================================
-#   YOUR LEVELS
+#   THE CAT WORLD
 #
-#   Every letter below is one square of the world.
-#   Change the letters, press play, and your level changes.
+#   This file takes the level you're on and builds it out of
+#   Kenney's little pictures.
 #
-#      .  sky (nothing)        C  a coin
-#      G  grass ground         M  a mushroom baddie
-#      D  dirt                 T  a tree
-#      B  a wooden box         b  a bush
-#      S  where the cat starts
-#      F  a checkpoint flag    W  the sandwich (finish!)
-#      P  a cup of coffee (fire powers!)
-#      H  a dog house          X  the dog boss        A  the axe
+#   The levels themselves are in scripts/levels.gd. Open that
+#   one to change a level, or to add a brand new one.
 #
-#   And the new stuff:
-#
-#      ^  spikes — they hurt          ~  water — you swim in it
-#      =  a ladder — press UP         k  a key
-#      L  a locked door (needs a key)
-#      E  a bat — it flies in a wavy line, you CAN stomp it
-#      O  a spiky ball — rolls at you, you CANNOT stomp it
-#
-#   And the power-up blocks. Bonk them from underneath with your
-#   head and something comes out. The colour says what:
-#
-#      ?  gold block   →  a CHICKEN NUGGET (see Y below)
-#      R  RED block    →  a heart, to get a lost one back
-#      N  GREEN block  →  a CHIP — run much faster for ten seconds
-#      U  BLUE block   →  a diamond — nothing can hurt you for
-#                          a few seconds, and you flatten anything
-#                          you touch, even a spiky ball
-#      Y  BROWN block  →  a cup of coffee, for fire powers
-#
-#   The chicken nugget is the big one: you put on a chicken nugget
-#   suit, and tapping SPACE TWICE throws chicken nuggets at the
-#   baddies. The suit takes one hit for you before it comes off.
-#
-#   Want EVERY block to drop nuggets? Change every line in
-#   BLOCK_COLOURS below to say "nugget".
-#
-#   Rows have to stay in order, but they can be any length.
-#   Try digging a pit, or building a tower of B's.
+#   Every level has a LOOK — grass, sand, snow, a dark cave...
+#   All the looks are listed below in LOOKS. A look says which
+#   ground pictures, background, music and trees a level gets.
 # ============================================================
 
-const LEVEL_ONE = [
-	"................................................................................................................",
-	"................................................................................................................",
-	"................................................................................................................",
-	"................................................................................................................",
-	"......................................................................E.........................................",
-	".................................E.............................................CC.......E.......................",
-	"................................................=CCCCC.........................k................................",
-	"...............................................G=BB?BB..........CCC............GG...............................",
-	".................BRB..........................GD=........=......GGG..BNB......GDDG..............................",
-	"......?.....R...CCC.........CCC....U..N......GDD=.....BBB=.....UDDD.Y...?....GDDDDG.....C.C.C.C....?............",
-	"............................................GDDD=........=..................GDDDDDDG...........B.........W......",
-	"...S....b....T.P.....M..~~~GGGGGF.M..O.....GDDDD=.M.^^.M.=~~~....^^.M....F.GDDDDDDDDG.P..M.O.M.L.T..b..GGGGGG.T.",
-	"GGGGGGGGGGGGGGGGGGGGGGGG~~~GGGGGGGGGGGGG...GGGGGGGGGGGGGGG~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-	"DDDDDDDDDDDDDDDDDDDDDDDD~~~DDDDDDDDDDDDD...DDDDDDDDDDDDDDD~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-]
-
-const LEVEL_TWO = [
-	"..............................................................................................................",
-	"..............................................................................................................",
-	"..............................................................................................................",
-	"..............................................................................................................",
-	".........................E.....................................................................E..............",
-	".......................................................E.....CC.........................CCC..k................",
-	".............................................................BB.........................GGG=BBBB..............",
-	"......................................CCMC.........................................CCC..DDD=..................",
-	"......................BNB...........GGGGGGG...............BB.......................GGG.....=..................",
-	"........?.CCC.R....................GDDDDDDDG..N....?........Y.....BUB.........CCC..DDD.....=..................",
-	"................BB....CCC.........GDDDDDDDDDG...BB.....BB...............BB....GGG..........=........B..W......",
-	"...S...b..P..M......F......M..M..GDDDDDDDDDDDG.~~~~..F....^.P.^^.M..M..~~~~.O.DDD...O......=.M..M.T.LGGGGGG.H.",
-	"GGGGGGGGGGGGGGG....GGGGGGGGGGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGG~~~~GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-	"DDDDDDDDDDDDDDD....DDDDDDDDDDDDDDDDDDDDDDDDDDDD~~~~DDDDDDDDDDDDDDDDDDDD~~~~DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-]
-
-# The last level: inside the dog house, with the dog and the axe.
-const LEVEL_THREE = [
-	"..............................................",
-	"..............................................",
-	"..............................................",
-	"..............................................",
-	"..............................................",
-	"..............................................",
-	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-	"B...................E.........E..............B",
-	"B...........CCC.......k........CCC...........B",
-	"B.......N...BBBY..R..BBBB?..U..BBB..?........B",
-	"B......................................B..A..B",
-	"B..S..P..B...^^....O....X.............BL.BBB.B",
-	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-	"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-]
-
+const Levels = preload("res://scripts/levels.gd")
 
 # Every level in the game, in the order you play them.
-# Copy a whole level, paste it on the end, and you have a level 3.
-const ALL_LEVELS = [LEVEL_ONE, LEVEL_TWO, LEVEL_THREE]
-
-# The colour behind each level. The last one is dark, because
-# you're inside the dog house.
-const LEVEL_SKIES = [
-	Color(0.83, 0.91, 0.95),
-	Color(0.74, 0.88, 0.94),
-	Color(0.16, 0.12, 0.15),
-]
-
+const ALL_LEVELS = Levels.ALL_LEVELS
 
 # Which level we're on right now. 0 means the first one.
 # It's "static" so that it remembers, even when the level restarts.
 static var level_number := 0
 
+# The game writes down which level you got to, so if you close it
+# and come back tomorrow, you carry on from the same level.
+const PROGRESS_FILE = "user://progress.cfg"
+static var progress_loaded := false
+
 # The level being played right now, copied out of ALL_LEVELS.
 var level = []
+
+# The look of the level being played right now, out of LOOKS.
+var look = {}
 
 # Every square of water that's at the surface, so we can make them
 # ripple together.
@@ -131,9 +47,9 @@ const TILE = 18
 # "3rd along, 2nd row down". Open assets/sprites/pixel_tiles.png
 # and count if you want to swap any of these for something else.
 const WOODEN_BOX = 6
-const TREE = 126
-const BUSH = 124
 const LADDER = 71
+const ARROW_SIGN = 85
+const FENCE = 105
 
 # Water needs three pictures: two different wavy tops that we flip
 # between so the surface ripples, and a plain one for underneath.
@@ -143,6 +59,15 @@ const DEEP_WATER = 73
 
 # How many times a second the surface flips between its two pictures.
 const RIPPLE_SPEED = 2.5
+
+# A pipe, like the green ones in Mario — only Kenney's are blue.
+const PIPE_TOP = 95
+const PIPE_MIDDLE = 115
+const PIPE_BOTTOM = 135
+
+# The stalk that holds up a mushroom top. The bottom one has roots.
+const STALK = 52
+const STALK_WITH_ROOTS = 72
 
 # The two hearts on the score board — a full one and an empty one.
 const FULL_HEART = 44
@@ -154,15 +79,196 @@ const KEY_PICTURE = 27
 # How big the score board pictures are, next to the words.
 const SCOREBOARD_PICTURE_SIZE = 36
 
+# ---- Ground, ledges and mushroom tops ----
+#
+# A block on its own wants a dark line all the way round it, but a
+# block in the middle of a long floor does not. So we keep four
+# pictures of each kind and pick the right one by looking at its
+# neighbours.
+#
+# The order inside each list is always:
+#      [ on its own,     left end,    middle,     right end ]
+#
+# Ground has two lists: one for the top of a thin strip (a dark line
+# underneath), and one for the top of a thick bit (more dirt below).
+const GRASS = {
+	"thin": [0, 1, 2, 3],
+	"thick": [20, 21, 22, 23],
+}
+const SAND = {
+	"thin": [40, 41, 42, 43],
+	"thick": [60, 61, 62, 63],
+}
+const SNOW = {
+	"thin": [80, 81, 82, 83],
+	"thick": [100, 101, 102, 103],
+}
+const BARE_DIRT = {
+	"thin": [140, 141, 142, 143],
+	"thick": [120, 121, 122, 123],
+}
+
+# Underneath the top, the ground is always dirt.
+const DIRT_WITH_MORE_BELOW = [120, 121, 122, 123]
+const DIRT_AT_THE_BOTTOM = [140, 141, 142, 143]
+
+# Ledges you can jump UP through and land on top of.
+const WOODEN_PLANK = [146, 146, 146, 146]
+const SNOWY_LEDGE = [156, 153, 154, 155]
+
+# Mushroom tops. You can jump up through these too. The middle one
+# that sits on a stalk has its own picture.
+const MUSHROOM_TOP = [12, 14, 13, 15]
+const MUSHROOM_TOP_ON_A_STALK = 12
+
+# ---- The looks ----
+#
+# Every level in levels.gd says which one of these it uses.
+#
+#   title    the words that pop up when the level starts
+#   ground   which ground pictures, from the lists just above
+#   hills    the faraway background (see background.gd) — an
+#            empty list [] means no sky at all, for going indoors
+#   sky      the colour behind everything, if there's no background
+#   music    which of Kenney's retro loops plays
+#   tree     the picture for a T — a tree, a cactus, a snowman...
+#   bush     the picture for a b
+#   ledge    the picture for an _ ledge
+#
+# And two extra ones you can add to any look:
+#
+#   slippery   true makes the ground icy — the cat slides about
+#   dark       a colour to tint the whole level, for night time
+#
+# The music choices are:
+#      "retro_mystic"  slow and dreamy, 48 seconds  (the chill one)
+#      "retro_beat"    a steady drum groove, 15 seconds
+#      "retro_reggae"  bouncy, 8 seconds
+#      "retro_polka"   silly, 8 seconds
+#      "retro_comedy"  very silly, 6 seconds
+const LOOKS = {
+	"grass": {
+		"title": "GRASSY HILLS",
+		"ground": GRASS,
+		"hills": [0, 1, 0, 3, 2],
+		"sky": Color(0.83, 0.91, 0.95),
+		"music": "retro_mystic",
+		"tree": 126, "bush": 124, "ledge": WOODEN_PLANK,
+	},
+	"cave": {
+		"title": "UNDERGROUND",
+		"ground": BARE_DIRT,
+		"hills": [],
+		"sky": Color(0.13, 0.11, 0.17),
+		"music": "retro_beat",
+		"tree": 129, "bush": 144, "ledge": WOODEN_PLANK,
+	},
+	"treetops": {
+		"title": "MUSHROOM TOPS",
+		"ground": GRASS,
+		"hills": [1, 2, 1, 0, 2],
+		"sky": Color(0.83, 0.91, 0.95),
+		"music": "retro_reggae",
+		"tree": 126, "bush": 124, "ledge": WOODEN_PLANK,
+	},
+	"desert": {
+		"title": "SANDY DESERT",
+		"ground": SAND,
+		"hills": [4, 5, 4, 4, 5],
+		"sky": Color(0.99, 0.80, 0.52),
+		"music": "retro_polka",
+		"tree": 127, "bush": 125, "ledge": WOODEN_PLANK,
+	},
+	"pyramid": {
+		"title": "INSIDE THE PYRAMID",
+		"ground": SAND,
+		"hills": [],
+		"sky": Color(0.24, 0.15, 0.11),
+		"music": "retro_beat",
+		"tree": 127, "bush": 144, "ledge": WOODEN_PLANK,
+	},
+	"desertnight": {
+		"title": "DESERT NIGHT",
+		"ground": SAND,
+		"hills": [4, 5, 4, 4, 5],
+		"sky": Color(0.99, 0.80, 0.52),
+		"music": "retro_mystic",
+		"tree": 127, "bush": 144, "ledge": WOODEN_PLANK,
+		"dark": Color(0.58, 0.52, 0.86),
+	},
+	"snow": {
+		"title": "SNOWY MOUNTAINS",
+		"ground": SNOW,
+		"hills": [3, 0, 3, 2, 3],
+		"sky": Color(0.86, 0.94, 0.97),
+		"music": "retro_mystic",
+		"tree": 126, "bush": 145, "ledge": SNOWY_LEDGE,
+		"slippery": true,
+	},
+	"icecave": {
+		"title": "ICE CAVE",
+		"ground": SNOW,
+		"hills": [],
+		"sky": Color(0.10, 0.15, 0.24),
+		"music": "retro_beat",
+		"tree": 126, "bush": 145, "ledge": SNOWY_LEDGE,
+		"slippery": true,
+	},
+	"sky": {
+		"title": "CLOUD LAND",
+		"ground": SNOW,
+		"hills": [1, 2, 1, 2, 0],
+		"sky": Color(0.83, 0.91, 0.95),
+		"music": "retro_reggae",
+		"tree": 126, "bush": 145, "ledge": SNOWY_LEDGE,
+	},
+	"forest": {
+		"title": "DEEP FOREST",
+		"ground": GRASS,
+		"hills": [6, 7, 6, 6, 7],
+		"sky": Color(0.74, 0.88, 0.94),
+		"music": "retro_mystic",
+		"tree": 125, "bush": 124, "ledge": WOODEN_PLANK,
+	},
+	"lake": {
+		"title": "LAKESIDE",
+		"ground": GRASS,
+		"hills": [1, 2, 1, 0, 2],
+		"sky": Color(0.83, 0.91, 0.95),
+		"music": "retro_reggae",
+		"tree": 126, "bush": 125, "ledge": WOODEN_PLANK,
+	},
+	"night": {
+		"title": "THE DOG'S BACKYARD",
+		"ground": GRASS,
+		"hills": [0, 3, 0, 1, 3],
+		"sky": Color(0.83, 0.91, 0.95),
+		"music": "retro_beat",
+		"tree": 126, "bush": 124, "ledge": WOODEN_PLANK,
+		"dark": Color(0.52, 0.56, 0.86),
+	},
+	"house": {
+		"title": "THE DOG HOUSE",
+		"ground": BARE_DIRT,
+		"hills": [],
+		"sky": Color(0.16, 0.12, 0.15),
+		"music": "retro_beat",
+		"tree": 129, "bush": 144, "ledge": WOODEN_PLANK,
+	},
+}
+
 # ---- The power-up blocks ----
 #
-# Every one is the same block picture painted a different colour.
+# Every one is the same block picture painted a different colour —
+# except the LUCKY block, which is Kenney's real gold block, and
+# gives you a surprise.
 # Want a purple one that gives you a key? Add a line here, pick a
 # spare letter, and add it to place_all_the_things below.
 #
 #            letter : [ what comes out,  what colour to paint it ]
 const BLOCK_COLOURS = {
-	"?": ["nugget",  Color(1.00, 0.80, 0.25)],   # gold
+	"!": ["lucky",   Color(1.00, 1.00, 1.00)],   # the real gold one
+	"?": ["nugget",  Color(1.00, 0.56, 0.16)],   # nugget orange
 	"R": ["heart",   Color(1.00, 0.36, 0.36)],   # red
 	"N": ["chip",    Color(0.36, 0.90, 0.42)],   # green
 	"U": ["diamond", Color(0.40, 0.66, 1.00)],   # blue
@@ -175,42 +281,23 @@ const BLOCK_COLOURS = {
 # background music, -24 is so quiet you almost don't notice it.
 const MUSIC_LOUDNESS = -14.0
 
-# Which of Kenney's retro loops each level plays. Swap any of these
-# for another name in the list and that level's music changes.
-#
-#      "retro_mystic"  slow and dreamy, 48 seconds  (the chill one)
-#      "retro_beat"    a steady drum groove, 15 seconds
-#      "retro_reggae"  bouncy, 8 seconds
-#      "retro_polka"   silly, 8 seconds
-#      "retro_comedy"  very silly, 6 seconds
-const LEVEL_MUSIC = ["retro_mystic", "retro_mystic", "retro_beat"]
-
 # The dog house is far too big for one square, so it gets its own
 # picture file instead of coming out of the tile sheet.
 var doghouse_picture = preload("res://assets/sprites/doghouse.png")
 
-# Ground is trickier. A block on its own wants a dark line all the
-# way round it, but a block in the middle of a long floor does not.
-# So we keep four pictures of each kind and pick the right one by
-# looking at its neighbours.
-#
-# The order inside each list is always:
-#      [ on its own,     left end,    middle,     right end ]
-const GRASS_WITH_DIRT_BELOW = [20, 21, 22, 23]
-const GRASS_ON_ITS_OWN = [0, 1, 2, 3]
-const DIRT_WITH_MORE_BELOW = [120, 121, 122, 123]
-const DIRT_AT_THE_BOTTOM = [140, 141, 142, 143]
-
 # Letters that the cat cannot walk through.
 # The power-up blocks are NOT in here: each one is its own little
 # scene that brings its own collision along with it.
-const SOLID_LETTERS = ["G", "D", "B"]
+const SOLID_LETTERS = ["G", "D", "B", "p"]
+
+# Letters you can jump up through from underneath, and then stand on.
+const LEDGE_LETTERS = ["_", "m"]
 
 # Letters that count as ground when picking the pictures above.
 # Boxes don't count — they already have their own line round them.
 const GROUND_LETTERS = ["G", "D"]
 
-# How long the "LEVEL DONE" sign stays up before the next level.
+# How long the "DONE!" sign stays up before the next level.
 const CHEER_TIME = 2.5
 
 var tiles_picture = preload("res://assets/sprites/pixel_tiles.png")
@@ -218,7 +305,6 @@ var coin_scene = preload("res://scenes/coin.tscn")
 var mushroom_scene = preload("res://scenes/mushroom.tscn")
 var checkpoint_scene = preload("res://scenes/checkpoint.tscn")
 var sandwich_scene = preload("res://scenes/sandwich.tscn")
-var coffee_scene = preload("res://scenes/coffee.tscn")
 var dog_scene = preload("res://scenes/dog.tscn")
 var axe_scene = preload("res://scenes/axe.tscn")
 var spikes_scene = preload("res://scenes/spikes.tscn")
@@ -235,16 +321,23 @@ var ladder_script = preload("res://scripts/ladder.gd")
 
 
 func _ready():
-	level = ALL_LEVELS[level_number]
-	RenderingServer.set_default_clear_color(LEVEL_SKIES[level_number])
+	find_out_which_level_we_are_on()
+	level = ALL_LEVELS[level_number]["rows"]
+	look = LOOKS[ALL_LEVELS[level_number]["look"]]
+	RenderingServer.set_default_clear_color(look["sky"])
 
 	start_the_music()
 	build_the_background()
 	draw_all_the_tiles()
 	build_the_invisible_walls()
+	build_the_ledges()
 	build_the_wet_and_climbable_bits()
 	place_all_the_things()
 	set_up_the_camera()
+	turn_down_the_lights()
+
+	# Snow and ice are slippery.
+	$Cat.slippery = look.get("slippery", false)
 
 	# Keep the score board up to date.
 	build_the_hearts()
@@ -257,12 +350,59 @@ func _ready():
 	show_hearts($Cat.hearts)
 	show_keys(0)
 
+	# Say which level this is, the way Mario does.
+	show_a_message("WORLD %s\n%s" % [level_name(), look["title"]])
+
+
+# ---- Remembering where you got to ----
+
+func find_out_which_level_we_are_on():
+	# Only look in the file once, when the game first starts.
+	# After that, level_number already knows.
+	if not progress_loaded:
+		progress_loaded = true
+		var progress = ConfigFile.new()
+		if progress.load(PROGRESS_FILE) == OK:
+			level_number = progress.get_value("progress", "level", 0)
+
+		# For testing: start the game with  -- --level=2-3
+		# to jump straight to that level.
+		for word in OS.get_cmdline_user_args():
+			if word.begins_with("--level="):
+				var wanted = word.trim_prefix("--level=")
+				for i in ALL_LEVELS.size():
+					if ALL_LEVELS[i]["name"] == wanted:
+						level_number = i
+
+	level_number = clampi(level_number, 0, ALL_LEVELS.size() - 1)
+	remember_which_level(level_number)
+
+
+func remember_which_level(number):
+	var progress = ConfigFile.new()
+	progress.set_value("progress", "level", number)
+	progress.save(PROGRESS_FILE)
+
+
+# The name of the level, like "2-3" (world 2, level 3).
+func level_name():
+	return ALL_LEVELS[level_number]["name"]
+
+
+# The options box calls this when you press N. Back to the very
+# beginning.
+func start_again_from_world_one():
+	level_number = 0
+	remember_which_level(0)
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
 
 # ---- The music ----
 
 # Quiet background music that loops round and round forever.
 func start_the_music():
-	var tune = load("res://assets/audio/%s.ogg" % LEVEL_MUSIC[level_number])
+	var tune = load("res://assets/audio/%s.ogg" % look["music"])
 	tune.loop = true
 	$Music.stream = tune
 	$Music.volume_db = MUSIC_LOUDNESS
@@ -273,6 +413,19 @@ func start_the_music():
 # the game — stop the music instead of leaving it playing into nothing.
 func _exit_tree():
 	$Music.stop()
+
+
+# ---- Night time ----
+
+# A look with "dark" in it tints the whole world that colour, so it
+# looks like night. The score board isn't tinted, so you can still
+# read it.
+func turn_down_the_lights():
+	if not look.has("dark"):
+		return
+	var night = CanvasModulate.new()
+	night.color = look["dark"]
+	add_child(night)
 
 
 # ---- The window ----
@@ -333,6 +486,11 @@ func is_solid(x, y):
 	return letter_at(x, y) in SOLID_LETTERS
 
 
+# Is this square a ledge you can jump up through?
+func is_ledge(x, y):
+	return letter_at(x, y) in LEDGE_LETTERS
+
+
 # Is this square made of grass or dirt?
 func is_ground(x, y):
 	return letter_at(x, y) in GROUND_LETTERS
@@ -355,7 +513,7 @@ func build_the_background():
 		widest = maxi(widest, row.length())
 
 	$Background.build(
-		level_number,
+		look["hills"],
 		widest * TILE,
 		level.size() * TILE,
 		(level.size() - 2) * TILE)
@@ -385,6 +543,19 @@ func draw_big_picture(picture, x, y):
 	$Tiles.add_child(sprite)
 
 
+# Picks from a list of four pictures —
+#      [ on its own,     left end,    middle,     right end ]
+# — by looking at whether the squares either side are the same kind.
+func pick_an_end(choices, same_on_the_left, same_on_the_right):
+	if same_on_the_left and same_on_the_right:
+		return choices[2]
+	if same_on_the_right:
+		return choices[1]
+	if same_on_the_left:
+		return choices[3]
+	return choices[0]
+
+
 # Looks at the squares around this one and picks the ground picture
 # that fits. This is what gives your level a neat dark edge instead
 # of making it look like a pile of loose bricks.
@@ -392,23 +563,15 @@ func which_ground_picture(x, y):
 	var buried = is_ground(x, y - 1)
 	var more_below = is_ground(x, y + 1)
 
-	# Grass only grows on top. Anything with a block on its head
-	# is just dirt.
+	# Grass (or sand, or snow) only grows on top. Anything with a
+	# block on its head is just dirt.
 	var choices
 	if letter_at(x, y) == "G" and not buried:
-		choices = GRASS_WITH_DIRT_BELOW if more_below else GRASS_ON_ITS_OWN
+		choices = look["ground"]["thick"] if more_below else look["ground"]["thin"]
 	else:
 		choices = DIRT_WITH_MORE_BELOW if more_below else DIRT_AT_THE_BOTTOM
 
-	var neighbour_left = is_ground(x - 1, y)
-	var neighbour_right = is_ground(x + 1, y)
-	if neighbour_left and neighbour_right:
-		return choices[2]
-	if neighbour_right:
-		return choices[1]
-	if neighbour_left:
-		return choices[3]
-	return choices[0]
+	return pick_an_end(choices, is_ground(x - 1, y), is_ground(x + 1, y))
 
 
 func draw_all_the_tiles():
@@ -420,15 +583,48 @@ func draw_all_the_tiles():
 			elif letter == "B":
 				draw_tile(x, y, WOODEN_BOX)
 			elif letter == "T":
-				draw_tile(x, y, TREE)
+				draw_tile(x, y, look["tree"])
 			elif letter == "b":
-				draw_tile(x, y, BUSH)
+				draw_tile(x, y, look["bush"])
 			elif letter == "=":
 				draw_tile(x, y, LADDER)
+			elif letter == ">":
+				draw_tile(x, y, ARROW_SIGN)
+			elif letter == "f":
+				draw_tile(x, y, FENCE)
+			elif letter == "p":
+				draw_pipe(x, y)
+			elif letter == "_":
+				draw_tile(x, y, pick_an_end(look["ledge"],
+					letter_at(x - 1, y) == "_", letter_at(x + 1, y) == "_"))
+			elif letter == "m":
+				draw_mushroom_top(x, y)
+			elif letter == "|":
+				draw_tile(x, y, STALK_WITH_ROOTS if is_solid(x, y + 1) else STALK)
 			elif letter == "~":
 				draw_water(x, y)
 			elif letter == "H":
 				draw_big_picture(doghouse_picture, x, y)
+
+
+# A pipe is a stack of p's. The top one gets the wide rim.
+func draw_pipe(x, y):
+	if letter_at(x, y - 1) != "p":
+		draw_tile(x, y, PIPE_TOP)
+	elif letter_at(x, y + 1) != "p":
+		draw_tile(x, y, PIPE_BOTTOM)
+	else:
+		draw_tile(x, y, PIPE_MIDDLE)
+
+
+# A mushroom top is a row of m's. Put a | under one and it grows a
+# stalk down to the ground.
+func draw_mushroom_top(x, y):
+	var picture = pick_an_end(MUSHROOM_TOP,
+		letter_at(x - 1, y) == "m", letter_at(x + 1, y) == "m")
+	if letter_at(x, y + 1) == "|" and picture == MUSHROOM_TOP[2]:
+		picture = MUSHROOM_TOP_ON_A_STALK
+	draw_tile(x, y, picture)
 
 
 # Water goes on TOP of the cat, not behind it, so that swimming
@@ -507,6 +703,19 @@ func build_the_invisible_walls():
 				add_wall(walls, run_starts_at, x, y)
 			x += 1
 
+	# And a tall wall just past each end of the level, so you can't
+	# walk off the edge of the world by going the wrong way.
+	var widest = 0
+	for row in level:
+		widest = maxi(widest, row.length())
+	for x in [-1, widest]:
+		var box = RectangleShape2D.new()
+		box.size = Vector2(TILE, level.size() * TILE * 3)
+		var shape = CollisionShape2D.new()
+		shape.shape = box
+		shape.position = Vector2(x * TILE + TILE / 2.0, 0)
+		walls.add_child(shape)
+
 
 func add_wall(walls, from_x, to_x, y):
 	var how_many = to_x - from_x + 1
@@ -519,6 +728,35 @@ func add_wall(walls, from_x, to_x, y):
 		from_x * TILE + how_many * TILE / 2.0,
 		y * TILE + TILE / 2.0)
 	walls.add_child(shape)
+
+
+# Ledges and mushroom tops only work one way: you can jump up
+# through them from underneath, but land on them from above.
+# Godot has a switch for exactly that — one_way_collision.
+const LEDGE_THICKNESS = 6
+
+func build_the_ledges():
+	var ledges = StaticBody2D.new()
+	add_child(ledges)
+
+	for y in level.size():
+		var x = 0
+		while x < level[y].length():
+			if is_ledge(x, y):
+				var run_starts_at = x
+				while is_ledge(x + 1, y):
+					x += 1
+				var how_many = x - run_starts_at + 1
+				var box = RectangleShape2D.new()
+				box.size = Vector2(how_many * TILE, LEDGE_THICKNESS)
+				var shape = CollisionShape2D.new()
+				shape.shape = box
+				shape.one_way_collision = true
+				shape.position = Vector2(
+					run_starts_at * TILE + how_many * TILE / 2.0,
+					y * TILE + LEDGE_THICKNESS / 2.0)
+				ledges.add_child(shape)
+			x += 1
 
 
 # ---- Coins, baddies, flags, the sandwich, and the cat ----
@@ -535,8 +773,6 @@ func place_all_the_things():
 				add_thing(checkpoint_scene, x, y)
 			elif letter == "W":
 				add_thing(sandwich_scene, x, y)
-			elif letter == "P":
-				add_thing(coffee_scene, x, y)
 			elif letter == "X":
 				add_thing(dog_scene, x, y)
 			elif letter == "A":
@@ -604,7 +840,7 @@ func show_a_message(words):
 
 
 func show_coins(total):
-	$HUD/CoinLabel.text = "Level %d       Coins: %d" % [level_number + 1, total]
+	$HUD/CoinLabel.text = "World %s       Coins: %d" % [level_name(), total]
 
 
 # ---- Hearts and keys ----
@@ -663,10 +899,13 @@ func show_level_done():
 	var last_level = ALL_LEVELS.size() - 1
 
 	if level_number >= last_level:
-		$HUD/MessageLabel.text = "YOU BEAT THE DOGGIE!"
+		# The whole game is done! Next time, start again from 1-1.
+		level_number = 0
+		remember_which_level(0)
+		$HUD/MessageLabel.text = "YOU BEAT THE DOGGIE!\nPRESS R TO PLAY AGAIN"
 		return
 
-	$HUD/MessageLabel.text = "LEVEL %d DONE!" % (level_number + 1)
+	$HUD/MessageLabel.text = "WORLD %s DONE!" % level_name()
 
 	# Let the cheering sound finish, then start the next level.
 	await get_tree().create_timer(CHEER_TIME).timeout

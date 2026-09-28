@@ -13,6 +13,10 @@ const SPEED = 135.0
 const SPEEDING_UP = 900.0
 const SLOWING_DOWN = 1100.0
 
+# On snow and ice, both of those get multiplied by this, so the cat
+# slides about. 1.0 = not slippery at all, 0.1 = like a hockey rink.
+const ICE_GRIP = 0.35
+
 # How hard the jump pushes. NEGATIVE, because in games up is negative.
 const JUMP_STRENGTH = -330.0
 
@@ -143,6 +147,9 @@ var safe_until := -99.0        # nothing can hurt you until this time
 # Fall below this line and you've fallen out of the world.
 # The level sets this for us when the game starts.
 var bottom_of_the_world := 400.0
+
+# True on snowy levels. The level sets this for us too.
+var slippery := false
 
 # The four pictures of the cat: standing, walking A, walking B, jumping.
 var normal_pictures = [
@@ -337,15 +344,21 @@ func run(delta):
 	# Water is thick. You can't sprint through it, chip or no chip.
 	var top_speed = SPEED
 	var pick_up_speed = SPEEDING_UP
+	var slow_down_speed = SLOWING_DOWN
 	if is_swimming():
 		top_speed = SWIMMING_SPEED
 	elif is_speedy():
 		top_speed = SPEEDY_SPEED
 		pick_up_speed = SPEEDY_SPEEDING_UP
 
+	# Paws on ice? Slow to get going, and slow to stop.
+	if slippery and is_on_floor():
+		pick_up_speed *= ICE_GRIP
+		slow_down_speed *= ICE_GRIP
+
 	if direction == 0:
 		# Nothing held: slide to a stop.
-		velocity.x = move_toward(velocity.x, 0.0, SLOWING_DOWN * delta)
+		velocity.x = move_toward(velocity.x, 0.0, slow_down_speed * delta)
 	else:
 		# Build up to full speed instead of snapping to it.
 		velocity.x = move_toward(velocity.x, direction * top_speed, pick_up_speed * delta)
@@ -503,6 +516,7 @@ func wear_the_nugget_suit():
 func drink_the_coffee():
 	has_fire = true
 	$PowerUpSound.play()
+	say("FIRE POWERS!\nTAP SPACE TWICE!")
 
 
 # ---- Water ----
