@@ -30,6 +30,10 @@ Assets used in this game, and where they came from.
   - `nugget.png`, the chicken nugget you throw
   - the dog boss — `dog_idle.png`, `dog_walk1.png`, `dog_walk2.png`,
     `dog_beaten.png`, plus `axe.png` and `doghouse.png`
+  - the other three bosses — `poodle_*.png`, `golden_*.png` and
+    `husky_*.png` — made by taking the dog pictures and swapping his
+    colours: white and lilac with a pink bow on top for the poodle, gold
+    for the golden retriever, and grey with blue eyes for the husky
 
 ## Audio
 

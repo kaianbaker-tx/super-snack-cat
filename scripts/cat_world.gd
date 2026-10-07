@@ -255,6 +255,36 @@ const LOOKS = {
 		"music": "retro_beat",
 		"tree": 129, "bush": 144, "ledge": WOODEN_PLANK,
 	},
+
+	# The three castles at the end of the first three areas.
+	"pinkcastle": {
+		"title": "THE POODLE'S CASTLE",
+		"ground": BARE_DIRT,
+		"hills": [],
+		"sky": Color(0.20, 0.11, 0.20),
+		"music": "retro_beat",
+		"tree": 129, "bush": 144, "ledge": WOODEN_PLANK,
+		"dark": Color(1.0, 0.78, 0.92),
+	},
+	"goldcastle": {
+		"title": "THE GOLDEN RETRIEVER'S CASTLE",
+		"ground": SAND,
+		"hills": [],
+		"sky": Color(0.20, 0.14, 0.08),
+		"music": "retro_beat",
+		"tree": 127, "bush": 144, "ledge": WOODEN_PLANK,
+		"dark": Color(1.0, 0.9, 0.62),
+	},
+	"icecastle": {
+		"title": "THE HUSKY'S ICE CASTLE",
+		"ground": SNOW,
+		"hills": [],
+		"sky": Color(0.08, 0.12, 0.22),
+		"music": "retro_beat",
+		"tree": 126, "bush": 145, "ledge": SNOWY_LEDGE,
+		"dark": Color(0.72, 0.86, 1.0),
+		"slippery": true,
+	},
 }
 
 # ---- The power-up blocks ----
@@ -321,6 +351,9 @@ var ladder_script = preload("res://scripts/ladder.gd")
 
 
 func _ready():
+	# Joining a group is how a boss finds the score board.
+	add_to_group("world")
+
 	find_out_which_level_we_are_on()
 	level = ALL_LEVELS[level_number]["rows"]
 	look = LOOKS[ALL_LEVELS[level_number]["look"]]
@@ -350,8 +383,14 @@ func _ready():
 	show_hearts($Cat.hearts)
 	show_keys(0)
 
-	# Say which level this is, the way Mario does.
-	show_a_message("WORLD %s\n%s" % [level_name(), look["title"]])
+	# Say which level this is, the way Mario does. A level with its
+	# own "title" uses that; otherwise the look's title. The first
+	# level of each area says which area too.
+	var this_level = ALL_LEVELS[level_number]
+	var words = "WORLD %s\n%s" % [level_name(), this_level.get("title", look["title"])]
+	if this_level.has("area"):
+		words = this_level["area"] + "\n" + words
+	show_a_message(words)
 
 
 # ---- Remembering where you got to ----
@@ -774,7 +813,7 @@ func place_all_the_things():
 			elif letter == "W":
 				add_thing(sandwich_scene, x, y)
 			elif letter == "X":
-				add_thing(dog_scene, x, y)
+				add_the_boss(x, y)
 			elif letter == "A":
 				add_thing(axe_scene, x, y)
 			elif letter == "^":
@@ -803,6 +842,15 @@ func add_a_power_up_block(letter, x, y):
 	block.colour = recipe[1]
 	block.position = middle_of(x, y)
 	$Things.add_child(block)
+
+
+# A boss. The level says which one with "boss": "poodle" — no boss
+# named means the big Doggie himself.
+func add_the_boss(x, y):
+	var boss = dog_scene.instantiate()
+	boss.kind = ALL_LEVELS[level_number].get("boss", "dog")
+	boss.position = middle_of(x, y)
+	$Things.add_child(boss)
 
 
 func add_thing(scene, x, y):
@@ -894,7 +942,53 @@ func show_keys(total):
 		$HUD/Keys.add_child(key)
 
 
-# The cat shouts when it eats the sandwich.
+# ---- The boss's hearts ----
+
+# A boss calls this when it wakes up and every time an axe hits it.
+# Its name and hearts go up in the top right corner.
+var boss_name := ""
+
+func show_boss_hearts(who, left, most):
+	boss_name = who
+	if not $HUD.has_node("Boss"):
+		var corner = VBoxContainer.new()
+		corner.name = "Boss"
+		corner.anchor_left = 1.0
+		corner.anchor_right = 1.0
+		corner.offset_left = -420.0
+		corner.offset_right = -18.0
+		corner.offset_top = 12.0
+		corner.alignment = BoxContainer.ALIGNMENT_BEGIN
+		var label = Label.new()
+		label.name = "Name"
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label.add_theme_font_size_override("font_size", 30)
+		label.add_theme_color_override("font_color", Color(1, 1, 1))
+		label.add_theme_color_override("font_outline_color", Color(0.24, 0.24, 0.34))
+		label.add_theme_constant_override("outline_size", 8)
+		corner.add_child(label)
+		var row = HBoxContainer.new()
+		row.name = "Hearts"
+		row.alignment = BoxContainer.ALIGNMENT_END
+		row.add_theme_constant_override("separation", 4)
+		corner.add_child(row)
+		$HUD.add_child(corner)
+
+	$HUD/Boss/Name.text = who
+	var row = $HUD/Boss/Hearts
+	for old in row.get_children():
+		old.queue_free()
+	for i in most:
+		var heart = TextureRect.new()
+		heart.custom_minimum_size = Vector2(
+			SCOREBOARD_PICTURE_SIZE, SCOREBOARD_PICTURE_SIZE)
+		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		heart.texture = scoreboard_picture(FULL_HEART if i < left else EMPTY_HEART)
+		row.add_child(heart)
+
+
+# The cat shouts when it eats the sandwich (or beats a boss).
 func show_level_done():
 	var last_level = ALL_LEVELS.size() - 1
 
@@ -905,7 +999,10 @@ func show_level_done():
 		$HUD/MessageLabel.text = "YOU BEAT THE DOGGIE!\nPRESS R TO PLAY AGAIN"
 		return
 
-	$HUD/MessageLabel.text = "WORLD %s DONE!" % level_name()
+	if boss_name != "":
+		$HUD/MessageLabel.text = "YOU BEAT %s!" % boss_name
+	else:
+		$HUD/MessageLabel.text = "WORLD %s DONE!" % level_name()
 
 	# Let the cheering sound finish, then start the next level.
 	await get_tree().create_timer(CHEER_TIME).timeout

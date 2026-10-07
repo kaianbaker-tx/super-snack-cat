@@ -4,7 +4,8 @@ A jump-and-run game, as long as the first Super Mario: **8 worlds, 4
 levels each — 32 levels**. You play a cat. There are coins, lucky blocks,
 mushroom baddies, bats, spiky balls, spikes, pipes, mushroom tops to hop
 across, ponds to swim in, ladders to climb, slippery snow, locked doors to
-unlock, and a dog boss waiting at the very end, in World 8-4.
+unlock, and **four dog bosses** — one in a castle at the end of each
+area.
 
 The whole game takes about an hour.
 
@@ -116,21 +117,47 @@ Quiet 8-bit loops from Kenney's retro pack. Every look in `LOOKS` in
 `scripts/cat_world.gd` says which loop it plays, and `MUSIC_LOUDNESS` sets
 how loud. All five tracks are already in `assets/audio/`.
 
-## The worlds
+## Areas and castles
 
-| World | Where | Levels |
-|---|---|---|
-| 1 | Grassy Hills | grass, underground cave, mushroom tops, grass |
-| 2 | Sandy Desert | desert, inside the pyramid, desert, pyramid |
-| 3 | Deep Forest | forest, cave, mushroom tops, forest |
-| 4 | Snowy Mountains | snow, ice cave, snowy ledges, ice cave |
-| 5 | Lakeside | lots of water, cave, mushroom tops, water |
-| 6 | Desert Night | the desert in the dark, pyramids |
-| 7 | Cloud Land | cloud ledges high in the sky, ice cave, snow |
-| 8 | The Dog's Backyard | at night, a cave, and then... **the Dog House** |
+The game has **4 areas**. Each one is 2 worlds long and ends in a
+**castle** with a boss inside:
 
-Every level starts with its name on screen, like **WORLD 2-3 — SANDY
-DESERT**. It gets harder as you go: more baddies, wider gaps, and spiky
+| Area | Worlds | The castle | The boss |
+|---|---|---|---|
+| 1 | Grassy hills, then the sandy desert | 2-4, the pink castle | **The Poodle** — bouncy, hops all the time |
+| 2 | The forest, then the lake | 4-4, the gold castle | **The Golden Retriever** — runs fast |
+| 3 | Snowy mountains, then Cloud Land | 6-4, the ice castle (slippery!) | **The Husky** — charges at you |
+| 4 | The desert at night, then the dog's backyard | 8-4, the Dog House | **The Doggie** himself |
+
+You can't jump on a boss — it's far too big. Get the **key** off the
+blocks, open the gate, grab the **axe**, and tap SPACE TWICE to throw it.
+The boss's hearts are in the top right corner. Every hit makes it angrier
+and faster:
+
+| Boss | Axes it takes |
+|---|---|
+| The Poodle | 2 |
+| The Golden Retriever | 3 |
+| The Husky | 4 |
+| The Doggie | 5 |
+
+Change how each boss behaves with `BOSSES` at the top of `scripts/dog.gd`.
+
+## Every level has a name
+
+| | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| World 1 | Sunny Meadow | Mole Tunnels | Mushroom Hop | Windy Hills |
+| World 2 | Cactus Canyon | Pyramid Panic | Pipe Dunes | **The Poodle's Castle** |
+| World 3 | Whispering Woods | Glowshroom Cave | Toadstool Towers | Bat Forest |
+| World 4 | Splash Lake | Drippy Caverns | Mushroom Marsh | **The Golden Retriever's Castle** |
+| World 5 | Frosty Peaks | Icicle Grotto | Snowball Sky Bridge | Blizzard Pass |
+| World 6 | Cotton Clouds | Frozen Caverns | Windy Skyway | **The Husky's Ice Castle** |
+| World 7 | Moonlit Dunes | Mummy Maze | Starry Steps | Scorpion Tomb |
+| World 8 | Backyard Gate | Under the Kennel | Bone Garden | **The Dog House** |
+
+Every level starts with its name on screen, like **WORLD 2-3 — PIPE
+DUNES**, and the first level of an area says **AREA 2** too. It gets harder as you go: more baddies, wider gaps, and spiky
 balls later on.
 
 **Snow and ice are slippery!** The cat takes longer to get going and
@@ -164,14 +191,16 @@ little room to spare.
 
 Levels are just rows of letters in `scripts/levels.gd`. Change a letter,
 press play, and the level changes. Every level has a `"name"` (like
-`"2-3"`), a `"look"`, and 14 rows.
+`"2-3"`), a `"title"` (like `"PIPE DUNES"`), a `"look"`, and 14 rows. A
+castle also says which `"boss"` lives there: `"poodle"`, `"golden"`,
+`"husky"` or `"dog"`.
 
 ```
 .  sky (nothing)     C  a coin           M  a mushroom baddie
 G  ground            T  a tree           b  a bush
 D  dirt              B  a wooden box     !  a LUCKY block
 S  where you start   F  a checkpoint     W  the sandwich (finish!)
-H  a dog house       X  the dog boss     A  the axe
+H  a dog house       X  the boss         A  the axe
 
 ^  spikes — they hurt          ~  water — you swim in it
 =  a ladder — press UP         k  a key
@@ -208,6 +237,7 @@ it does. Change one, press play, feel the difference.
 |---|---|
 | `cat.gd` | `SPEED`, `JUMP_STRENGTH`, `HOW_MANY_HEARTS`, `SWIM_STROKE`, `ICE_GRIP` |
 | `powerup_block.gd` | `LUCKY_SURPRISES`, `COINS_IN_A_SHOWER`, `SHINE_SPEED` |
+| `dog.gd` | `BOSSES` — each boss's speed, hops and hits; `ANGRIER` |
 | `background.gd` | `HOW_SLOW` — how far away the hills feel |
 | `bat.gd` | `HOW_WAVY` — a lazy glide or a panicky flutter |
 | `spiky_ball.gd` | `SPEED` — the spin keeps up on its own |
